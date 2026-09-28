@@ -118,7 +118,7 @@ requires-dist = [
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=2.2" },
     { name = "pydantic", specifier = ">=2.13" },
     { name = "pydantic-ai-slim", specifier = ">=2.51" },
-    { name = "sqlalchemy", extras = ["asyncio"], marker = "extra == 'sql'", specifier = ">=2.1" },
+    { name = "sqlalchemy", extras = ["asyncio"], marker = "extra == 'sql'", specifier = ">=2.1.1" },
 ]
 provides-extras = ["sql", "fastapi", "mcp"]
 
