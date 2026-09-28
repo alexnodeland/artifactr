@@ -6,6 +6,7 @@ from collections.abc import AsyncIterator
 from typing import Any, cast
 
 import pytest
+from mcp import Client
 from mcp.server.mcpserver import Context
 from mcp.server.subscriptions import ResourceUpdated
 from mcp.shared.exceptions import MCPError
@@ -14,7 +15,6 @@ import tests.artifact_types  # noqa: F401  (registers the test artifact types)
 from artifactr.core import ExternalAgentActor, TenantId, UserActor
 from artifactr.mcp import ArtifactrMcp, artifact_uri
 from artifactr.workspace import InMemoryStorage, Workspace, Workspaces
-from mcp import Client
 from tests.agent.conftest import Gate, Script, call, make_agent, say
 from tests.artifact_types import Checklist, Note
 

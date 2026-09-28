@@ -7,6 +7,7 @@ from collections.abc import Callable, Iterator
 from typing import Any
 
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic_ai import Agent, FunctionToolset, RunContext
 from starlette.requests import HTTPConnection
@@ -16,7 +17,6 @@ from artifactr.agent import ArtifactWorkspace, Runner, Session
 from artifactr.core import Actor, TenantId, UserActor, WorkspaceId
 from artifactr.fastapi import Unauthorized, artifactr_router
 from artifactr.workspace import InMemoryStorage, Workspaces
-from fastapi import FastAPI
 from tests.agent.conftest import Script
 from tests.artifact_types import Checklist, Note
 

@@ -52,7 +52,7 @@ def test_hello_welcome_replay_then_live(client: TestClient) -> None:
         replayed = _receive_until(ws, "replay_complete")
         assert [f.get("seq") for f in replayed] == [1, None], "t2's thread_created is filtered"
         assert replayed[-1] == {"type": "replay_complete", "up_to_seq": 2}
-        _post(client, "c3", type="post_message", thread_id="t2", content="not followed")
+        _post(client, "c3", type="set_thread_mode", thread_id="t2", mode="suggest")  # not followed
         _post(client, "c4", type="create_artifact", artifact_id="n1", kind="note", data={})
         live = ws.receive_json()
         assert (live["type"], live["seq"], live["event"]["type"]) == (

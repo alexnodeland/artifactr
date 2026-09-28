@@ -5,6 +5,7 @@ import logging
 from collections.abc import Awaitable, Callable, Collection, Coroutine
 from typing import Any
 
+from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, ValidationError
 from starlette.requests import HTTPConnection
 
@@ -31,7 +32,6 @@ from artifactr.core import (
     resume,
 )
 from artifactr.workspace import Workspace
-from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 
 logger = logging.getLogger("artifactr.fastapi")
 
