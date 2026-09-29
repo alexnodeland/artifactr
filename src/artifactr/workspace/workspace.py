@@ -92,8 +92,8 @@ from artifactr.workspace.storage import HistoryChunk, Scope, Storage
 Authorize = Callable[[TenantId, WorkspaceId, Actor], Awaitable[bool]]
 """Decides whether an actor may use a workspace of its tenant.
 
-It lives with the workspaces, not in an adapter, so every surface can take one as its
-``authorize`` hook and ask it before opening a workspace for a request.
+The surfaces that serve workspaces, the FastAPI router and the MCP server, take one as their
+``authorize`` hook, and ask it before opening a workspace for a request.
 """
 
 
