@@ -11,7 +11,6 @@ from typing import Any
 
 import pytest
 from evalr import Dataset, Example, measure
-from evalr.dspy import DspyJudge
 from evalr.measures import Turn
 from fastapi.testclient import TestClient
 from pydantic_ai import ModelMessage, ModelRequest, ModelResponse, ToolReturnPart, UserPromptPart
@@ -273,6 +272,8 @@ async def test_a_first_draft_is_never_too_big() -> None:
 
 
 def test_the_judge_comes_from_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    from evalr.dspy import DspyJudge  # the dspy extra's, imported only where it is used
+
     assert judge_from_environment().version == "1:0.5"
     monkeypatch.setenv("DOCPLAN_JUDGE_THRESHOLD", "0.25")
     assert judge_from_environment().version == "1:0.25"
