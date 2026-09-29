@@ -18,45 +18,36 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - remove containers you didn't create
 
 ## Maintainer decisions (2026-09-29, recorded on the issues)
-- **PyPI:** stay on GitHub for now (artifactr#23). stackr needs a script that bumps the template's library revisions in `copier.yml`. Not started; do it after stackr's docs site lands.
-- **Scores:** move the feedback-to-score mapping and the `Score`/`ScoreSink`/`ScoreConfigStore` ports into `evalr.core`. The libraries depend on evalr, and their mirrors stay in the libraries (evalr#17).
-- **Telemetry:** design 1, composable contributions. Each library exports `telemetry()`, and either `configure_telemetry(*contributions)` combines them. Polling stops making a trace per poll, and `FeedbackMirror` gets a cursor (artifactr#50, reflexr#62). Start after the scores work merges, because both touch the Langfuse extras.
-- **Combined system:** an RFC in stackr as a design PR. Pause for the maintainer's sign-off before building (stackr#8).
+- **PyPI:** stay on GitHub (artifactr#23). stackr's `make bump-libraries` (stackr#32) moves the template's pins; evalr follows the commit reflexr pins.
+- **Scores:** done. evalr owns the mapping and ports (evalr#32); artifactr#59 and reflexr#70 build on it; evalr#17 closed.
+- **Telemetry:** design 1, composable contributions (artifactr#50, reflexr#62). In progress.
+- **Merging:** the maintainer allows merging PRs in all four repos once CI is green on the PR (2026-09-29). Review every diff first.
+- **RFC-0002 (the combined system):** accepted and merged (stackr#30). The bridge is **relayr**, a new sibling repo (not created yet). D6: decide reflexr#45 (namespaced event types) before relayr phase 1. Prerequisites filed: artifactr#60 traceparent, #61 message idempotency, #62 workspace discovery, #63 notices; reflexr#72 reserved publishers; plus reflexr#45, #21. Decisions are put to the maintainer with AskUserQuestion.
 
-## In flight when paused
-Each agent was told to push a WIP branch with its own `CONTINUATION.md`. Check `git branch -r` and the worktrees under `.claude/worktrees/`.
+## In flight (update as agents report)
 
-| Work | Repos | Branch | Worktree |
+| Work | Repos | Branch / worktree | State |
 |---|---|---|---|
-| Scores into evalr (evalr#17). Not started: stopped in the read-only design phase; no branches. | evalr, artifactr, reflexr | none | none |
-| Combined-system RFC-0002, for sign-off, not merge | stackr | `docs/rfc-combined-system` | `.claude/worktrees/combined-rfc` |
-| Docs site, RFC-0001 phase 6. The agent may merge. | stackr | `docs/site` | `.claude/worktrees/docs-site` |
-| Graceful reactor stop (#63): only a `CONTINUATION.md` is pushed. Checkpoint restore (#58) and quiet startup (#48): not started. | reflexr | `feat/reactor-stop` | |
-| Filtered and tail reads (reflexr#46) and subscribe-from-head (artifactr#24), with identical protocol names in both. Not started: no code written or pushed; empty worktrees remain at `.claude/worktrees/log-reads` in both repos. | reflexr, artifactr | none | `.claude/worktrees/log-reads` |
-| MCP command dedup and missing reads (#49), API rough edges (#51). Not started; no branches. Notes below. | artifactr | none | none |
+| reflexr#45 design: ADR (Proposed) with decision points, for AskUserQuestion | reflexr | `docs/event-namespaces`, `.claude/worktrees/event-namespaces` | agent drafting |
+| Telemetry composition, polling without traces, mirror cursors | artifactr, reflexr | `feat/composable-telemetry`, `.claude/worktrees/telemetry` | agent building |
+| artifactr#60 traceparent, #61 message idempotency | artifactr | `feat/envelope-traceparent`, `feat/message-idempotency` | agent building |
+| evalr#31 measures rough edges | evalr | `fix/measures` | agent building |
+| artifactr MCP logging fix (port of reflexr#73) | artifactr | `fix/quiet-mcp` | agent building |
+| stackr template: bump pins, adopt scores API, graceful stop, McpContext, function_model | stackr | `feat/template-libraries`, `.claude/worktrees/template-bump` | agent building |
 
 ## Open follow-ups, not started
-- **artifactr:**
-  - #54: online evaluation on artifact revisions
-  - #42 is done; reflexr's #53 (oncall eval loop) is the pair
-- **reflexr:**
-  - #53: oncall eval loop
-  - #45: namespaced event types, a design; the combined system needs it
-  - #21: runtime rules, on the roadmap; the combined system needs it
-- **evalr:**
-  - #31: measures and results rough edges
-  - bump the evalr pins in artifactr and reflexr after the scores work
-- **stackr:**
-  - the bump script, as decided
-  - automate evalr's Langfuse round trip in the smoke job (follow-up to evalr#26)
-  - the template should adopt reflexr's graceful stop once #63 lands
-  - roadmap issues #3 to #7
-- **Telemetry composition:** artifactr#50 and reflexr#62, after the scores work.
+- **After telemetry merges:** a stackr template PR adopting `configure_telemetry(*contributions)` and `langfuse="scores"`.
+- **After #45 is decided:** implement it; then reflexr#72; then create the relayr repo (ask first) and start RFC-0002 phase 1.
+- **reflexr#21** runtime rules: needs a design (RFC-0002 phase 5 depends on it).
+- **artifactr#62, #63** (workspace discovery, notices); **artifactr#54** online evaluation on revisions; **reflexr#53** oncall eval loop.
+- **stackr:** automate evalr's Langfuse round trip in the smoke job; roadmap #3 to #7.
+- `create-tenant` shows a raw `TimeoutError` traceback on a read timeout (noted by the bump agent, not filed).
 
 ## State notes
-- **stackr's local stack is down.** The template agent ran `make reset` at the end of its smoke tests, which deleted the stack's volumes. Restart it with `make up` in stackr.
-- **Pull requests:** every repo's main was green at the pause. No open PRs are waiting on me except those the in-flight agents open.
-- **artifactr worktree:** `agent-a177dac1d942b45bc` is locked by another process. Leave it.
+- **stackr's local stack is down** (an earlier `make reset`). `make up` restarts it.
+- **Containers:** `reflexr-postgres-1` and `artifactr-postgres-1` (from `make pg-up`) are running for tests.
+- **artifactr worktree `agent-a177dac1d942b45bc`** (branch `feat/sql`) is locked by another process. Leave it and its remote branch.
+- A stray `/private/tmp/pyrightconfig.json` from other work hijacks pyright for apps generated under /tmp; use `pyright -p .`.
 
 ## Notes for artifactr #49 and #51, from the agent that read the code
 - **The dedup key.** The router's `_Results` (`src/artifactr/fastapi/router.py`) keys results by `(workspace_id, repr(actor), command_id)` and has no tenant. The shared version should add `workspace.tenant_id`.
