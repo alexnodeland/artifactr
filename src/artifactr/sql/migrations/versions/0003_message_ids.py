@@ -20,7 +20,7 @@ depends_on: str | Sequence[str] | None = None
 
 def upgrade() -> None:
     """Upgrade the schema."""
-    op.create_table(
+    messages = op.create_table(
         "artifactr_messages",
         sa.Column("tenant_id", sa.String(), nullable=False),
         sa.Column("workspace_id", sa.String(), nullable=False),
@@ -44,12 +44,6 @@ def upgrade() -> None:
         )
         .where(events.c.event_type == "message_posted")
         .distinct()
-    )
-    messages = sa.table(
-        "artifactr_messages",
-        sa.column("tenant_id", sa.String()),
-        sa.column("workspace_id", sa.String()),
-        sa.column("id", sa.String()),
     )
     op.execute(messages.insert().from_select(["tenant_id", "workspace_id", "id"], used))
 

@@ -306,10 +306,10 @@ class Workspace:
             message_id: The message's id; a new one when omitted. An id already used in the
                 workspace is refused with :class:`~artifactr.core.InvalidState`.
         """
-        message_id = message_id or new_message_id()
-        return await self.commit(
-            PostMessage(thread_id=thread_id, content=content, message_id=message_id)
+        message = PostMessage(
+            thread_id=thread_id, content=content, message_id=message_id or new_message_id()
         )
+        return await self.commit(message)
 
     async def _execute(
         self,
