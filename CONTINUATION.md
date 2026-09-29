@@ -32,8 +32,8 @@ Each agent was told to push a WIP branch with its own `CONTINUATION.md`. Check `
 | Combined-system RFC-0002, for sign-off, not merge | stackr | `docs/rfc-combined-system` | `.claude/worktrees/combined-rfc` |
 | Docs site, RFC-0001 phase 6. The agent may merge. | stackr | `docs/site` | `.claude/worktrees/docs-site` |
 | Graceful reactor stop (#63), checkpoint restore (#58), quiet startup (#48) | reflexr | `feat/reactor-stop`, `fix/checkpoint-restore`, `fix/quiet-startup` | |
-| Filtered and tail reads (reflexr#46) and subscribe-from-head (artifactr#24), with identical protocol names in both | reflexr, artifactr | `feat/log-reads` | |
-| MCP command dedup and missing reads (#49), API rough edges (#51) | artifactr | `fix/mcp-parity`, `fix/api-rough-edges` | |
+| Filtered and tail reads (reflexr#46) and subscribe-from-head (artifactr#24), with identical protocol names in both. Not started: no code written or pushed; empty worktrees remain at `.claude/worktrees/log-reads` in both repos. | reflexr, artifactr | none | `.claude/worktrees/log-reads` |
+| MCP command dedup and missing reads (#49), API rough edges (#51). Not started; no branches. Notes below. | artifactr | none | none |
 
 ## Open follow-ups, not started
 - **artifactr:**
@@ -57,3 +57,15 @@ Each agent was told to push a WIP branch with its own `CONTINUATION.md`. Check `
 - **stackr's local stack is down.** The template agent ran `make reset` at the end of its smoke tests, which deleted the stack's volumes. Restart it with `make up` in stackr.
 - **Pull requests:** every repo's main was green at the pause. No open PRs are waiting on me except those the in-flight agents open.
 - **artifactr worktree:** `agent-a177dac1d942b45bc` is locked by another process. Leave it.
+
+## Notes for artifactr #49 and #51, from the agent that read the code
+- **The dedup key.** The router's `_Results` (`src/artifactr/fastapi/router.py`) keys results by `(workspace_id, repr(actor), command_id)` and has no tenant. The shared version should add `workspace.tenant_id`.
+- **Where shared dedup belongs.** Both surfaces send commands to `Runner.execute` (`src/artifactr/agent/runner.py`), so the agent or workspace layer is the natural home for shared result memory.
+- **Reads REST has and MCP lacks:**
+  - `GET .../artifacts/{id}/revisions`
+  - `GET .../threads` and `.../threads/{id}`
+  - `GET .../runs/{id}`
+
+  REST has no list-runs endpoint. Leave event reads to the log-reads work.
+- **`Sent.run` can legitimately be `None`:** on `ThreadBusy`, when the message steers a running run, or when an answer leaves requests unanswered. So #51's fix is to document when it is `None`, not to make the field required.
+- **reflexr's `litellm_model`** (`src/reflexr/litellm/gateway.py:75`) has the same signature as artifactr's and also lacks `settings=`. Change both together.
