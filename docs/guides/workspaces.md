@@ -72,12 +72,12 @@ await ws.commit(plan.archive())  # ArchiveArtifact
 A message id is used once in a workspace, like a thread, artifact or proposal id ([ADR-0045](../adr/0045-a-message-id-is-used-once.md)). Code that retries derives its ids from what it is doing, and treats `InvalidState` as "already done":
 
 ```python
+import contextlib
+
 from artifactr.core import InvalidState
 
-try:
+with contextlib.suppress(InvalidState):  # an earlier attempt posted it
     await ws.post_message(thread.id, "The deploy failed.", message_id=f"deploy-{deploy_id}")
-except InvalidState:
-    pass  # an earlier attempt posted it
 ```
 
 ## Reading
