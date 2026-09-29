@@ -141,7 +141,11 @@ testpaths = ["tests", "examples/docplan/tests"]
 addopts = ["--strict-markers", "--strict-config", "-ra"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-filterwarnings = ["error"]
+filterwarnings = [
+    "error",
+    # backoff, which Langfuse uses, calls asyncio.iscoroutinefunction, deprecated in Python 3.14.
+    "ignore:'asyncio.iscoroutinefunction' is deprecated:DeprecationWarning:backoff._decorator",
+]
 markers = [
     "postgres: needs a PostgreSQL database (set ARTIFACTR_TEST_POSTGRES_URL)",
 ]
