@@ -57,7 +57,7 @@ reflexr carried the same mapping and ports, and evalr its own score type, sink a
 - **The public names stay, re-exported.** `artifactr.scores` promised `Score`, `ScoreConfig`, `ScoreSink`, `ScoreConfigStore`, `ScoreDataType` and `MAX_TEXT` in its `__all__` and its reference, so it re-exports evalr's (`ScoreDataType` is evalr's `ScoreType`). `score_configs` and `score_values` stay artifactr's own, since they name scores by the registered name. A `ScoreConfig`'s `feedback_type` is now `type_name`.
 - **`artifactr.scores` needs evalr.** The `[langfuse]` extra now depends on evalr, as `[evals]` does, pinned by git revision until evalr is published ([ADR-0044](0044-the-evalr-adapter.md)). The inner layers (core, telemetry, workspace, agent) never import evalr; `tests/test_layering.py` lets `artifactr.scores` and `artifactr.langfuse` import `evalr.core`, beside `artifactr.evals`.
 
-reflexr made the same change to `reflexr.scores`.
+reflexr made the same change to `reflexr.scores`, in its ADR-0025.
 
 ## Action items
 
