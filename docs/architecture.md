@@ -81,7 +81,7 @@ The inner layers (core, telemetry, workspace, agent) form a hexagon of ports and
 | `artifactr.core` | pydantic, jsonpatch | Inner | Every rule. Pure, synchronous, no I/O, no pydantic-ai, no OpenTelemetry. |
 | `artifactr.telemetry` | core, the OpenTelemetry API | Inner; its port is the OpenTelemetry API | Span attribution, the metric registry, and recording through the API. |
 | `artifactr.workspace` | core, telemetry | Inner; owns the `Storage` port | `Workspaces`, `Workspace`, storage protocols, in-memory storage. |
-| `artifactr.agent` | workspace, telemetry, pydantic-ai | Inner; owns the `TurnContext` and `TurnEvaluator` ports | The `ArtifactWorkspace` capability, `Session`, `Runner`, live-output helpers, and `function_model` for scripted models. |
+| `artifactr.agent` | workspace, telemetry, pydantic-ai | Inner; owns the `TurnContext` and `TurnEvaluator` ports | The `ArtifactWorkspace` capability, `Session`, `Runner`, live-output helpers. |
 | `artifactr.scores` | workspace | Inner; owns the `ScoreSink` and `ScoreConfigStore` ports | Feedback as scores, and the mirror that sends a workspace's feedback to a sink. |
 | `artifactr.sql` (extra) | workspace, SQLAlchemy 2 async, Alembic | Adapter for `Storage` | Durable storage on PostgreSQL and SQLite, and its migrations. |
 | `artifactr.otel` (extra) | telemetry, the OpenTelemetry SDK, exporters and instrumentations | Adapter for the OpenTelemetry API | `configure_telemetry`: providers, OTLP export, instrumentations and metric views, for applications. |
