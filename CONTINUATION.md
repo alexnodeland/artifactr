@@ -28,10 +28,10 @@ Each agent was told to push a WIP branch with its own `CONTINUATION.md`. Check `
 
 | Work | Repos | Branch | Worktree |
 |---|---|---|---|
-| Scores into evalr (evalr#17). The evalr PR may merge alone; the library PRs are for review. | evalr, artifactr, reflexr | `refactor/scores-in-evalr` | `.claude/worktrees/scores-consolidation` |
+| Scores into evalr (evalr#17). Not started: stopped in the read-only design phase; no branches. | evalr, artifactr, reflexr | none | none |
 | Combined-system RFC-0002, for sign-off, not merge | stackr | `docs/rfc-combined-system` | `.claude/worktrees/combined-rfc` |
 | Docs site, RFC-0001 phase 6. The agent may merge. | stackr | `docs/site` | `.claude/worktrees/docs-site` |
-| Graceful reactor stop (#63), checkpoint restore (#58), quiet startup (#48) | reflexr | `feat/reactor-stop`, `fix/checkpoint-restore`, `fix/quiet-startup` | |
+| Graceful reactor stop (#63): only a `CONTINUATION.md` is pushed. Checkpoint restore (#58) and quiet startup (#48): not started. | reflexr | `feat/reactor-stop` | |
 | Filtered and tail reads (reflexr#46) and subscribe-from-head (artifactr#24), with identical protocol names in both. Not started: no code written or pushed; empty worktrees remain at `.claude/worktrees/log-reads` in both repos. | reflexr, artifactr | none | `.claude/worktrees/log-reads` |
 | MCP command dedup and missing reads (#49), API rough edges (#51). Not started; no branches. Notes below. | artifactr | none | none |
 
