@@ -18,36 +18,82 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - remove containers you didn't create
 
 ## Maintainer decisions (2026-09-29, recorded on the issues)
-- **PyPI:** stay on GitHub (artifactr#23). stackr's `make bump-libraries` (stackr#32) moves the template's pins; evalr follows the commit reflexr pins.
-- **Scores:** done. evalr owns the mapping and ports (evalr#32); artifactr#59 and reflexr#70 build on it; evalr#17 closed.
-- **Telemetry:** design 1, composable contributions (artifactr#50, reflexr#62). In progress.
-- **Merging:** the maintainer allows merging PRs in all four repos once CI is green on the PR (2026-09-29). Review every diff first.
-- **RFC-0002 (the combined system):** accepted and merged (stackr#30). The bridge is **relayr**, a new sibling repo (not created yet). D6: decide reflexr#45 (namespaced event types) before relayr phase 1. Prerequisites filed: artifactr#60 traceparent, #61 message idempotency, #62 workspace discovery, #63 notices; reflexr#72 reserved publishers; plus reflexr#45, #21. Decisions are put to the maintainer with AskUserQuestion.
+- **PyPI:** stay on GitHub. The libraries' own `[tool.uv.sources]` pin evalr, and uv applies a git dependency's sources, so stackr's template pins only artifactr and reflexr (stackr ADR-0013, in #36).
+- **Merging:** allowed in all four repos once the PR's CI is green. The loop's bar is "extremely clean and idiomatic":
+  - at most 3–4 editing agents, never two in the same modules
+  - an independent simplicity review (a Plan agent) on every PR before merge
+  - update the branch and re-run CI before merging
+  - cleanup sweeps between waves of features
+  - each agent uses its own scratchpad subfolder
+- **Decisions** go to the maintainer with AskUserQuestion; a design gets a simplicity review first, to cut its decisions down.
+- **RFC-0002 (stackr, combined system):** accepted. The bridge is **relayr**, a new sibling repo, not created yet: ask first. Its phase 1 waits for reflexr#45's implementation.
+- **reflexr ADR-0039 (#45, namespaced event types):** accepted and merged.
+  - Every event type is `namespace:name`, applications' included.
+  - Namespaces are declared with `namespace=` on a base class and are unique per process.
+  - The per-`Workspaces` registry is a view over the one table.
+  - A clean break, with a migration.
+  - A publisher policy on `Workspaces` (#72).
+  - Bridged types are `artifactr:<type>`.
+- **reflexr RFC-0003 (#21, runtime rules):** accepted and merged.
+  - One fixed `StoredRules` config.
+  - Params typed through the action port: the maintainer's choice, and its costs are recorded.
+  - Three commands.
+  - Archive only, and a stored rule's runs are unordered.
+  - It may watch any event type.
+  - Every rule name is qualified, code rules included; this lands with #45's implementation.
 
-## In flight (update as agents report)
+## Done in the resumed loop (all merged)
+- **stackr:**
+  - the docs site (#23)
+  - Dependabot bumps
+  - the Postgres major pin (#26)
+  - `make bump-libraries` (#32)
+  - the docs-review fixes (#33)
+  - RFC-0002 (#30, #34, #35)
+- **evalr:**
+  - scores (#32)
+  - measures rough edges (#33)
+- **artifactr:**
+  - MCP parity and dedup (#56)
+  - rough edges (#57)
+  - log reads (#58)
+  - scores on evalr (#59)
+  - MCP logging (#64)
+  - traceparent (#65)
+  - message ids (#66)
+  - telemetry (#67)
+- **reflexr:**
+  - log reads (#67)
+  - `litellm_model` settings (#68)
+  - graceful stop (#69)
+  - scores on evalr (#70)
+  - checkpoint restore (#71)
+  - MCP logging (#73)
+  - ADR-0039 (#74)
+  - RFC-0003 (#75)
+  - telemetry (#76)
 
-| Work | Repos | Branch / worktree | State |
-|---|---|---|---|
-| reflexr#45 design: ADR (Proposed) with decision points, for AskUserQuestion | reflexr | `docs/event-namespaces`, `.claude/worktrees/event-namespaces` | agent drafting |
-| Telemetry composition, polling without traces, mirror cursors | artifactr, reflexr | `feat/composable-telemetry`, `.claude/worktrees/telemetry` | agent building |
-| artifactr#60 traceparent, #61 message idempotency | artifactr | `feat/envelope-traceparent`, `feat/message-idempotency` | agent building |
-| evalr#31 measures rough edges | evalr | `fix/measures` | agent building |
-| artifactr MCP logging fix (port of reflexr#73) | artifactr | `fix/quiet-mcp` | agent building |
-| stackr template: bump pins, adopt scores API, graceful stop, McpContext, function_model | stackr | `feat/template-libraries`, `.claude/worktrees/template-bump` | agent building |
+## In flight
 
-## Open follow-ups, not started
-- **After telemetry merges:** a stackr template PR adopting `configure_telemetry(*contributions)` and `langfuse="scores"`.
-- **After #45 is decided:** implement it; then reflexr#72; then create the relayr repo (ask first) and start RFC-0002 phase 1.
-- **reflexr#21** runtime rules: needs a design (RFC-0002 phase 5 depends on it).
-- **artifactr#62, #63** (workspace discovery, notices); **artifactr#54** online evaluation on revisions; **reflexr#53** oncall eval loop.
-- **stackr:** automate evalr's Langfuse round trip in the smoke job; roadmap #3 to #7.
-- `create-tenant` shows a raw `TimeoutError` traceback on a read timeout (noted by the bump agent, not filed).
+| Work | Repo | State |
+|---|---|---|
+| Template on the libraries' main: graceful stop, evalr from the libraries' pins, ADR-0013 | stackr #36 | applying review fixes (uvicorn drain timeout, ADR trims) |
+| One set of Langfuse score adapters, `Score` validation, one docs build | evalr #34 | under independent review |
+| Cleanup PR 1: cancel-safe SQL storage (`_to_the_end`), delete `OpenTransactions`, simplify `serve`, supersede ADR-0027. PR 2: the rest of the review | reflexr | agent building PR 1 |
+| Cleanup PR 1: cancel-safe SQL storage (the same helper), `Runner.aclose`. PR 2: one `Runner.execute`, surface helper, reads, `seal`, ADR-0012+0022 consolidation | artifactr | agent building PR 1 |
+
+## Next
+- After evalr #34: adoption PRs in artifactr and reflexr, deleting their `langfuse/scores.py`, bumping the evalr pin (both libraries in one sitting, same commit), and consolidating artifactr ADR-0038 and reflexr's scores ADRs.
+- After the reflexr cleanup: #45's implementation (agent on hold, worktree `event-namespaces`), including qualified rule names.
+- Then RFC-0003's implementation; reflexr#72; ask about creating relayr.
+- stackr cleanup: `scripts/_env.py`, Supabase names, CI docs duplication, `architecture.md`, jq instead of Python `eval`, the `Mirrors` supervisor (after the libraries offer all-workspace mirrors). Adopt telemetry in the template: contributions, `langfuse="scores"`, `cursor=`.
+- artifactr#68 (a crashed run stays running); #62 and #63 (workspace discovery, notices); #54; reflexr#53.
 
 ## State notes
-- **stackr's local stack is down** (an earlier `make reset`). `make up` restarts it.
+- **stackr's local stack is down.** `make up` restarts it.
 - **Containers:** `reflexr-postgres-1` and `artifactr-postgres-1` (from `make pg-up`) are running for tests.
 - **artifactr worktree `agent-a177dac1d942b45bc`** (branch `feat/sql`) is locked by another process. Leave it and its remote branch.
-- A stray `/private/tmp/pyrightconfig.json` from other work hijacks pyright for apps generated under /tmp; use `pyright -p .`.
+- A stray `/private/tmp/pyrightconfig.json` from other work hijacks pyright for apps under /tmp; use `pyright -p .`.
 
 ## Notes for artifactr #49 and #51, from the agent that read the code
 - **The dedup key.** The router's `_Results` (`src/artifactr/fastapi/router.py`) keys results by `(workspace_id, repr(actor), command_id)` and has no tenant. The shared version should add `workspace.tenant_id`.
