@@ -61,7 +61,11 @@ class Transaction(Protocol):
     """
 
     async def load(self, needs: Needs) -> State:
-        """Load the requested entities. Ids that do not exist map to ``None``."""
+        """Load the requested entities, and whether the requested message ids are used.
+
+        Entity ids that do not exist map to ``None``. Message ids are looked up by key, not by
+        reading the log; :meth:`save` records a result's ``messages`` as used.
+        """
         ...
 
     async def save(

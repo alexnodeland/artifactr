@@ -46,6 +46,7 @@ from artifactr.sql.tables import (
     EventRow,
     HistoryRow,
     LeaseRow,
+    MessageRow,
     ProposalRow,
     RevisionRow,
     RunRow,
@@ -83,6 +84,7 @@ class _Transaction:
             proposals=await self._load(ProposalRow, needs.proposals, _proposal),
             threads=await self._load(ThreadRow, needs.threads, _thread),
             runs=await self._load(RunRow, needs.runs, _run),
+            messages=await self._used(needs.messages),
         )
 
     async def _load[R: EntityRow, T](
@@ -135,6 +137,9 @@ class _Transaction:
             run_row.thread_id = run.thread_id
             run_row.status = run.status
             run_row.body = run.model_dump(mode="json")
+        self._session.add_all(
+            MessageRow(**self._key, id=message_id) for message_id in result.messages
+        )
         self._session.add_all(
             RevisionRow(
                 **self._key,
@@ -190,6 +195,15 @@ class _Transaction:
     def _next_position(self) -> int:
         self._workspace.last_position += 1
         return self._workspace.last_position
+
+    async def _used(self, message_ids: frozenset[str]) -> dict[str, bool]:
+        if not message_ids:
+            return {}
+        rows = await self._session.scalars(
+            _scoped(MessageRow, self._scope).where(MessageRow.id.in_(message_ids))
+        )
+        used = {row.id for row in rows}
+        return {i: i in used for i in message_ids}
 
 
 async def _lock_workspace(session: AsyncSession, scope: Scope) -> WorkspaceRow:
