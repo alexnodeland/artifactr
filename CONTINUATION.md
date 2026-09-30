@@ -145,6 +145,39 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **The RFC is stale in two places:** artifactr #75 and reflexr #90 were merged on 2026-09-30. It also says "himself"; reword it without a pronoun.
 - **Python matrix:** lattice is public, so Actions minutes are free. Run 3.13 and 3.14 on every PR.
 
+**Tooling and CI, signed off 2026-09-30.** The maintainer said "Don't just base off my existing projects. I'm open to better suggestions", and wants CI to be impeccable.
+- **Orchestration:** moon, with `moonrepo/setup-toolchain` reading `.prototools`.
+- **Keeping main green:** one required `CI` check (alls-green) and branches that are up to date with main. PRs run the affected projects; pushes to main and a nightly run check everything, plus osv-scanner and a lychee link check. Merge queues aren't available, because `alexnodeland` is a personal account.
+- **Hardening:**
+  - actionlint and zizmor
+  - every action pinned to a SHA with a version comment
+  - `permissions: {}` at the top of each workflow, granted per job, and `persist-credentials: false`
+  - OpenSSF Scorecard
+  - release provenance attestations
+  - secret scanning with push protection, and private vulnerability reporting enabled (SECURITY.md already links to it)
+- **Test signal:**
+  - pytest-timeout, and `timeout-minutes` on every job
+  - pytest-randomly
+  - JUnit test reports and moon's run report on PRs
+  - a lint of PR titles
+- **Replacements:**
+  - **ty** replaces pyright, at the maintainer's choice. It's beta (0.0.84), so compare what it catches with pyright strict once, and report the gaps.
+  - **prek** replaces pre-commit.
+  - **release-please** replaces git-cliff: the history is generated once at the move, and then git-cliff retires.
+  - **Renovate** replaces Dependabot, with `config:best-practices`, `minimumReleaseAge`, `.prototools` handled by a custom manager, and postgres held at 17.
+  - TypeScript 7.0 (the native compiler) is current.
+- **Extra checks:** Schemathesis over the OpenAPI documents, CodeQL with dependency review, and griffe's API-break check. Mutation testing was declined.
+- **Docs** live in `docs/<package>/` at the root, with Zensical's native `.nav.yml`; there are no per-package `mkdocs.yml` files and no composer script.
+- **Decided by me, from the review, with no objection raised:**
+  - stackr provisions dashboards from the checkout, which retires fetch-dashboards, its pins and release-assets.yml
+  - deptry replaces the planned bespoke import check
+  - one shared ruff and ty configuration
+  - one quality check
+  - one dev container at the root
+  - stackr keeps its Makefile; the root Makefile only installs and runs checks; the libraries' other targets become moon tasks with `runInCI: false`
+- **Sequencing:** the setup commit changes only what the move forces, or what would otherwise be written twice (docs, shared configuration, Renovate, prek, release-please). Anything that could change test outcomes lands as its own PR after the move: ty, pytest-randomly, timeouts, and the new checks.
+- The simplicity review's report is `scratchpad/rfc-0003-review.md` (session ebd41844).
+
 **portalr** (the web app), to design in an RFC after the migration:
 - Tiers and stack:
   - two apps, `app` (usage) and `admin` (management plane), from one Bun workspace, sharing `client` (TypeScript types generated from the libraries' schemas) and `ui`
