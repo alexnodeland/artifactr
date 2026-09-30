@@ -133,6 +133,8 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - #1: Renovate runs from lattice's own Actions, as the App `alexnodeland-lattice`. The maintainer declined Mend's hosted app, and the secrets are `LATTICE_APP_*`.
   - #2: RFC-0003's Tracking records what the rehearsal settled. The design sections change only through a superseding RFC, so they weren't amended.
   - #20: the packages' URLs.
+  - #21: only feat, fix, perf and revert cut a release. Docs and the other hidden types don't release, and don't appear in release notes (the maintainer's choice).
+  - #22: RFC-0003's tracking issue in lattice. It lists every PR and open item.
 - **The repo's settings:**
   - squash-only merges
   - the `main` ruleset, requiring CI and Title on up-to-date branches
@@ -141,7 +143,7 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - Pages from Actions, with HTTPS enforced
   - the 15 known alerts dismissed, with the reasons `osv-scanner.toml` gives
 - **Open in lattice:**
-  - **#19, release-please's first release PR.** It would release all five packages, with only the move's `docs:` commits as notes, because release-please's default changelog sections count `docs` as releasable. It needs the maintainer's release-policy decision; don't merge it without one.
+  - **#19, release-please's release PR:** now stackr 0.1.0 only, from #3's fix. It's open on purpose and tracked in #22. Merging it is the maintainer's call.
   - **#17:** lift the osv ignores by 2026-12-31.
   - **#18:** the `$…_TEST_POSTGRES_URL` moon inputs make every PR run artifactr's and reflexr's tests, plus their dependents'.
   - **docplan's tests** hung in CI 3 times in 5 runs, and never locally (macOS, Linux, starved CPU, small thread pool). With #4, a hang now fails in 60s with every thread's stack; open an issue from the first stack.
@@ -151,7 +153,7 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - `rfc-0003-amendments.md`, the source for phase 3's ADRs
   - `lattice.sh` and its steps
 - **Local checkouts:**
-  - The day's tree is `~/anodeland/projects/code/lattice-day/lattice`, whose origin is lattice over SSH. Pull before use; it predates #1–#4.
+  - The day's tree is `~/anodeland/projects/code/lattice-day/lattice`, whose origin is lattice over SSH. It's at bcb1eb1 (#21); pull before use.
   - The scratch clone used for today's PRs is in the session scratchpad.
   - The maintainer's `gh` token lacks the `workflow` scope, so update PR branches that touch workflows over SSH, not with `gh pr update-branch`.
 
