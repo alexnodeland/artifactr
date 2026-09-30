@@ -11,14 +11,14 @@ import json
 import tomllib
 from pathlib import Path
 
-from lib import PACKAGES, git, install, move, remove, replace, run
+from lib import PACKAGES, fail, git, install, move, remove, replace, run
 
 for name in PACKAGES:
     remove(f"packages/{name}/.github", f"packages/{name}/.pre-commit-config.yaml")
 move("packages/artifactr/.editorconfig", ".editorconfig")
 for name in ("reflexr", "evalr", "stackr", "relayr"):
     remove(f"packages/{name}/.editorconfig")
-install("09-ci")
+install()
 
 # prek runs the hooks now; its version, and the workflow linters', come from the root's group.
 for name in ("artifactr", "reflexr", "evalr", "relayr"):
@@ -37,7 +37,8 @@ replace(
     "\t$(UV) sync --all-packages --all-groups --all-extras\n",
     "install: ## Install every package, dependency group and extra, and the git hooks\n"
     "\t$(UV) sync --all-packages --all-groups --all-extras\n"
-    "\t$(UV) run prek install\n",
+    "\t$(UV) run prek install\n"
+    "\tgit config blame.ignoreRevsFile .git-blame-ignore-revs\n",
 )
 replace(
     ".devcontainer/post-create.sh",
@@ -81,7 +82,11 @@ for name in PACKAGES:
             }
         ],
     }
-    manifest[f"packages/{name}"] = project["version"]
+    # A package's last release is its newest <name>-v* tag, which the import renamed, and
+    # release-please finds by that tag; a package never released starts from 0.0.0, and its first
+    # release is 0.1.0.
+    tags = git("tag", "--list", f"{name}-v*", "--sort=-version:refname").split()
+    manifest[f"packages/{name}"] = tags[0].removeprefix(f"{name}-v") if tags else "0.0.0"
 # The packages are pre-1.0, where a breaking change bumps the minor version, as their `!`
 # commits always have; release-please's default would release 1.0.0 on the first one.
 config = {
@@ -92,6 +97,20 @@ config = {
 }
 Path("release-please-config.json").write_text(json.dumps(config, indent=2) + "\n")
 Path(".release-please-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+
+# git blame looks past the commit that only sorted imports, as GitHub's blame view does.
+style = git(
+    "log", "--format=%H", "--fixed-strings", "--grep", "style: sort the imports", "-1"
+).strip()
+if not style:
+    fail("no style commit to name in .git-blame-ignore-revs")
+Path(".git-blame-ignore-revs").write_text(
+    "# Commits that only reformat code, which `git blame --ignore-revs-file .git-blame-ignore-revs`\n"
+    "# and GitHub's blame view look past.\n"
+    "\n"
+    "# style: sort the imports that name a sibling package as first-party\n"
+    f"{style}\n"
+)
 
 # stackr's notes on its tools, now that pre-commit, git-cliff and Zensical are the root's or gone.
 replace(

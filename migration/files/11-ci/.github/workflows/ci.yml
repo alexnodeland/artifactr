@@ -1,19 +1,24 @@
-# lattice's CI (stackr's RFC-0003, CI and tooling). moon runs each job's tasks for the projects a
-# change affects, and for their dependents all the way down. CI, the last job, is the one
-# required check.
+# lattice's CI, on every pull request (stackr's RFC-0003, CI and tooling). Check, Tests and Images
+# run their task in every project the pull request affects, and in every project that depends on
+# one, all the way down (scripts/affected.py); Template and Smoke run when stackr's own inputs
+# change. nightly.yml runs everything on main. CI, the last job, and Title (title.yml) are the
+# required checks.
 
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
 
 permissions: {}
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
+
+# What the pull request changes, for moon: its merge commit against its base.
+env:
+  MOON_BASE: origin/${{ github.base_ref }}
+  MOON_HEAD: HEAD
 
 jobs:
   check:
@@ -50,7 +55,7 @@ jobs:
           PGPASSWORD: lattice
         run: psql -h localhost -U postgres -c 'CREATE DATABASE artifactr' -c 'CREATE DATABASE reflexr'
       - run: uv sync --locked --all-packages --all-groups --all-extras
-      - run: moon ci --downstream deep :check
+      - run: uv run --no-project python scripts/affected.py check
 
   tests:
     name: Tests (Python ${{ matrix.python }})
@@ -72,10 +77,27 @@ jobs:
         with:
           auto-install: true
       - run: uv sync --locked --all-packages --all-groups --all-extras
-      - run: moon ci --downstream deep :test
+      - run: uv run --no-project python scripts/affected.py test
+
+  # docplan's and oncall's images, each built from the root and started on PostgreSQL.
+  images:
+    name: Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: moonrepo/setup-toolchain@261c62cb5b0f580c7be7c8cd0f023a2e96756095 # v0.6.4
+        with:
+          auto-install: true
+      - run: uv run --no-project python scripts/affected.py image
 
   # Each variant of the application template, generated and checked as its own CI would: lint,
-  # strict types, and the tests with 100% coverage. It runs only when stackr is affected.
+  # strict types, and the tests with 100% coverage. It runs only when stackr's inputs change: the
+  # template pins the libraries by revision, so a library's change can't reach what it generates.
   template:
     name: Template (${{ matrix.libraries }}${{ matrix.evals && ', evals' || '' }}, Python ${{ matrix.python }})
     runs-on: ubuntu-latest
@@ -107,7 +129,7 @@ jobs:
       - run: moon ci stackr:template
 
   # The stack, started with each set of profiles, and telemetry sent through it. It runs only
-  # when stackr is affected.
+  # when stackr's inputs change.
   smoke:
     name: Smoke (${{ matrix.name }})
     runs-on: ubuntu-latest
@@ -163,34 +185,8 @@ jobs:
         working-directory: packages/stackr
         run: make reset
 
-  title:
-    name: Title
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    steps:
-      # The title becomes the squash commit. Scopes are the packages' module and area names, as
-      # before, and aren't listed here: a new module brings a new scope.
-      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          types: |
-            feat
-            fix
-            docs
-            refactor
-            perf
-            test
-            build
-            ci
-            chore
-            revert
-
   dependency-review:
     name: Dependency review
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -204,7 +200,6 @@ jobs:
   # lockfile with its base's.
   osv:
     name: OSV
-    if: github.event_name == 'pull_request'
     permissions:
       actions: read
       contents: read
@@ -217,12 +212,10 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [check, tests, template, smoke, title, dependency-review, osv]
+    needs: [check, tests, images, template, smoke, dependency-review, osv]
     runs-on: ubuntu-latest
     permissions: {}
     steps:
       - uses: re-actors/alls-green@b5b5b37504aa4183270bd3d855c52a67f212be35 # v1.3.0
         with:
           jobs: ${{ toJSON(needs) }}
-          # They run only on pull requests.
-          allowed-skips: title, dependency-review, osv

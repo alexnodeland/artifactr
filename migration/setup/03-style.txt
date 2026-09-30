@@ -1,0 +1,6 @@
+style: sort the imports that name a sibling package as first-party
+
+Under the one ruff configuration, every package's code is first-party wherever it is imported,
+as the package's own modules are, so ruff's import sorting moves each import that names a
+sibling into the first-party group. This commit does only that, with the ruff that uv.lock pins,
+and .git-blame-ignore-revs names it, so blame looks past it.

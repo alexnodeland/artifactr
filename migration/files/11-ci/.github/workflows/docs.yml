@@ -1,23 +1,22 @@
-# The family's one docs build (stackr's RFC-0003, Docs). It builds the site on every pull request,
-# and publishes it to GitHub Pages at https://lattice.alexnodeland.com from main: on every push,
-# so the site always shows main's documentation, and by hand. The custom domain is set in the
-# repository's Pages settings, with "GitHub Actions" as the source.
+# The family's one docs build (stackr's RFC-0003, Docs), published to GitHub Pages at
+# https://lattice.alexnodeland.com from main: on every push, so the site always shows main's
+# documentation, and by hand. CI builds the site strictly on every pull request, as the root
+# project's docs task. The custom domain is set in the repository's Pages settings, with
+# "GitHub Actions" as the source.
 
 name: Docs
 
 on:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
 
 permissions: {}
 
-# Runs on main wait their turn, so an older commit never deploys after a newer one; a newer run
-# on a pull request cancels the older one.
+# Runs wait their turn, so an older commit never deploys after a newer one.
 concurrency:
-  group: docs-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: docs
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -42,7 +41,7 @@ jobs:
 
   deploy:
     name: Deploy
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:

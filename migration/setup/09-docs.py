@@ -6,13 +6,14 @@ contributing guide, code of conduct, security policy and license exist once, at 
 each package keeps its changelog page.
 """
 
+import posixpath
 import re
 import shutil
 from pathlib import Path
 
 import yaml
 
-from lib import PACKAGES, install, move, remove, replace, run, sub
+from lib import PACKAGES, fail, install, move, remove, replace, run, sub
 
 MERGED = ("contributing", "code-of-conduct", "security", "license")
 """The project pages that exist once, at the family's level, and leave each package's section."""
@@ -53,7 +54,7 @@ for name in ("artifactr", "reflexr", "evalr", "stackr"):
 
 # relayr's foundation had no site yet: its section lists its decisions, its plan and its brand.
 # Its accepted ADRs link to an index of its RFCs and to a brand page, which the foundation hadn't
-# written; they are added (files/07-docs/docs/relayr/), so the one strict build holds.
+# written; they are added (files/09-docs/docs/relayr/), so the one strict build holds.
 relayr = Path("docs/relayr")
 nav_file(
     "relayr",
@@ -90,9 +91,10 @@ for name in PACKAGES:
         page.write_text(text)
 
 # ─── the family's project files ───────────────────────────────────────────────
-# One contributing guide, code of conduct and security policy, at the root: artifactr's move
-# there with their history and absorb the others. Each package keeps its LICENSE, which its
-# wheel and sdist ship, and the root has the same one.
+# One contributing guide, code of conduct and security policy, at the root. The code of conduct
+# was one file in every package, so artifactr's moves there with its history. The contributing
+# guide and the security policy are new (files/09-docs/), and take in what was each package's.
+# Each package keeps its LICENSE, which its wheel and sdist ship, and the root has the same one.
 
 move("packages/artifactr/CODE_OF_CONDUCT.md", "CODE_OF_CONDUCT.md")
 replace(
@@ -100,16 +102,74 @@ replace(
     "https://github.com/alexnodeland/artifactr/security/advisories/new",
     "https://github.com/alexnodeland/lattice/security/advisories/new",
 )
-move("packages/artifactr/CONTRIBUTING.md", "CONTRIBUTING.md")
-move("packages/artifactr/SECURITY.md", "SECURITY.md")
 for name in ("reflexr", "evalr", "stackr"):
-    remove(
-        f"packages/{name}/CODE_OF_CONDUCT.md",
-        f"packages/{name}/CONTRIBUTING.md",
-        f"packages/{name}/SECURITY.md",
-    )
+    remove(f"packages/{name}/CODE_OF_CONDUCT.md")
+for name in ("artifactr", "reflexr", "evalr", "stackr"):
+    remove(f"packages/{name}/CONTRIBUTING.md", f"packages/{name}/SECURITY.md")
 shutil.copyfile("packages/artifactr/LICENSE", "LICENSE")
-install("07-docs")
+install()
+
+# The site has one stylesheet, lattice's; each package's is gone, and its brand page says so.
+for name in PACKAGES:
+    remove(f"docs/{name}/assets/stylesheets/brand.css")
+for name in ("evalr", "stackr"):
+    replace(
+        f"docs/{name}/assets/brand/README.md",
+        "The site's colours are applied by one stylesheet, [`brand.css`](../stylesheets/brand.css).\n",
+        "lattice's site applies one palette to every section, from its "
+        "`docs/assets/stylesheets/lattice.css`, until lattice's brand ADR.\n",
+    )
+
+# ─── the packages' READMEs ────────────────────────────────────────────────────
+# A package's README is also its page on PyPI, and its relative links pointed into its own
+# repository: at pages that are the site's now, at the banners in its docs, and at files that
+# moved. Each becomes absolute: a page of the site, an image from the repository, or a file on
+# GitHub.
+
+SITE = "https://lattice.alexnodeland.com"
+RAW = "https://raw.githubusercontent.com/alexnodeland/lattice/main"
+BLOB = "https://github.com/alexnodeland/lattice/blob/main"
+ROOT_FILES = {"CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md"}
+LINK = re.compile(r'(\]\(|(?:src|srcset|href)=")([^)"\s]+)')
+
+
+def lattice_url(package: str, old: str) -> str:
+    """The URL of what a path in a package's old repository names in lattice."""
+    path, _, anchor = old.partition("#")
+    if path.startswith("docs/"):
+        path = f"docs/{package}/{path.removeprefix('docs/')}"
+    elif not path.startswith("examples/") and path not in ROOT_FILES:
+        path = f"packages/{package}/{path}"
+    if path.endswith((".svg", ".png")):
+        url = f"{RAW}/{path}"
+    elif path.startswith("docs/") and path.endswith(".md"):
+        page = re.sub(r"(^|/)(index|README)$", "", path.removeprefix("docs/").removesuffix(".md"))
+        url = f"{SITE}/{page}/"
+    else:
+        url = f"{BLOB}/{path}"
+    return f"{url}#{anchor}" if anchor else url
+
+
+def make_absolute(readme: str, package: str, base: str) -> None:
+    """Make a README's relative links absolute; ``base`` is its directory in the old repository."""
+    moved: list[str] = []
+
+    def absolute(match: re.Match[str]) -> str:
+        if re.match(r"[a-z]+:|#", match[2]):
+            return match[0]
+        moved.append(match[2])
+        return match[1] + lattice_url(package, posixpath.normpath(posixpath.join(base, match[2])))
+
+    text = LINK.sub(absolute, Path(readme).read_text())
+    if not moved:
+        fail(f"{readme}: no relative link to make absolute")
+    Path(readme).write_text(text)
+
+
+for name in ("artifactr", "reflexr", "evalr", "stackr"):
+    make_absolute(f"packages/{name}/README.md", name, "")
+make_absolute("examples/docplan/README.md", "artifactr", "examples/docplan")
+make_absolute("examples/oncall/README.md", "reflexr", "examples/oncall")
 
 # ─── the site's scripts ───────────────────────────────────────────────────────
 # The list check was one file in five packages; the Sphinx-roles extension was two copies of one
@@ -233,6 +293,11 @@ replace(
     stackr / "Makefile", " smoke-app docs docs-serve docs-reference ", " smoke-app docs-reference "
 )
 replace(
+    stackr / "Makefile",
+    "clean: ## Remove tool caches and the built site\n\trm -rf .ruff_cache .cache site\n",
+    "clean: ## Remove tool caches\n\trm -rf .ruff_cache .cache\n",
+)
+replace(
     stackr / "scripts/docs-reference",
     'PAGES = ROOT / "docs" / "reference"\n',
     "LATTICE = ROOT.parent.parent\n"
@@ -251,11 +316,8 @@ replace(
 )
 replace(
     stackr / "moon.yml",
-    "    command: 'uv run scripts/docs-reference --check'\n",
-    "    command: 'uv run scripts/docs-reference --check'\n"
-    "    inputs:\n"
-    "      - '**/*'\n"
-    "      - '/docs/stackr/reference/**/*'\n",
+    "      - '/uv.lock'\n\n  check:\n",
+    "      - '/uv.lock'\n      - '/docs/stackr/reference/**/*'\n\n  check:\n",
 )
 run(
     "uv",

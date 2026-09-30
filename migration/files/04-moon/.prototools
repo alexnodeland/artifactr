@@ -2,3 +2,7 @@
 # (`proto use`). Renovate's proto manager keeps them current.
 moon = "2.5.6"
 uv = "0.12.12"
+
+# Only this file chooses proto's tools: uv owns Python, from .python-version.
+[settings]
+detect-strategy = "only-prototools"

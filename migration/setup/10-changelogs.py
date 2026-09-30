@@ -65,7 +65,7 @@ replace(
 )
 
 # relayr's history has its first changelog, and its section a page for it.
-install("08-changelogs")
+install()
 replace(
     "docs/relayr/.nav.yml",
     "- Brand: assets/brand/README.md\n",

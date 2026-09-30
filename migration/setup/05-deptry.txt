@@ -1,0 +1,17 @@
+build: every package declares what its shipped code imports
+
+In one environment every member and every dependency is importable, so an import that a package
+doesn't declare passes silently, and fails for someone who installs the package alone. deptry,
+over each package's src/, found eight modules that artifactr, reflexr and evalr imported through
+another dependency. Each is declared now, at the lowest version that the dependency which
+brought it in requires, so no install set narrows, and deptry joins each package's check. DEP002
+(unused) stays off, since extras such as [postgres] name drivers the code never imports.
+
+- artifactr: jsonpointer>=1.9 (from jsonpatch).
+- reflexr: pydantic-core>=2.46.0 (from pydantic).
+- evalr: annotated-types>=0.6.0 (from pydantic), and huggingface-hub>=0.25.0 in [hf] (from
+  datasets).
+- artifactr and reflexr: starlette in [fastapi] (>=0.46.0, from fastapi) and [mcp] (>=0.27, from
+  mcp), and httpx2>=2.7 in [litellm] (from pydantic-ai-slim).
+
+The lock changes only in these packages' requirements; no resolved version moves.

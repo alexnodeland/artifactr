@@ -9,7 +9,7 @@ checkout's; the ranges in [project] are what a built wheel carries.
   its own project, with its own tests and 100% coverage gate, and the pyright, pytest and
   coverage settings its library held for it.
 - One ruff configuration, at the root. Every package's code is first-party wherever it is
-  imported, so the imports that name a sibling are sorted again. stackr extends the root's
+  imported; the next commit sorts the imports that this moves. stackr extends the root's
   configuration with its own rules for its scripts.
 - One quality test, at the root, over every package, examples/ and the root's own Python.
 - pyright stays per package, on the workspace's one environment.

@@ -19,5 +19,9 @@ foundation hadn't written, which are added so the strict build holds.
 - The site's palette is key, the family's neutral ink, until lattice's brand ADR, and each
   section's home opens with its package's lockup as before.
 - lattice's README, which also says what grantr and portalr will be.
+- Each package's README is also its PyPI page, and its relative links pointed into its old
+  repository. They are absolute now: the site's pages, the banners from the repository, and
+  files on GitHub.
+- Each package's brand.css goes: the site has one stylesheet, lattice's.
 - The build's tools are the root's docs group. lattice:docs builds the site strictly, and
   stackr:reference checks stackr's reference pages in their new place.

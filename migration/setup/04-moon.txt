@@ -10,8 +10,7 @@ pyproject.toml and uv.lock as inputs.
 - .moon/tasks/distribution.yml gives every package that ships a wheel build, standalone and
   deptry. standalone installs the wheel with its extras, and its siblings' wheels by path, into
   an environment outside the workspace, then imports every module and checks the version; it is
-  part of check. deptry isn't yet: it finds imports that artifactr, reflexr and evalr don't
-  declare, which each package declares in a change of its own.
+  part of check. deptry joins check in the next commit, which declares the imports it finds.
 - Each project's moon.yml states its dependsOn, since moon infers no edge from a range, and a
   root test holds it to the project's pyproject.toml.
 - The libraries' Makefiles become tasks (schema, dashboards, pg-up, pg-down, app-up, test-pg).

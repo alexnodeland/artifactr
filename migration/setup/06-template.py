@@ -11,7 +11,7 @@ from pathlib import Path
 
 from lib import install, replace
 
-install("04-template")
+install()
 
 stackr = Path("packages/stackr")
 replace(
@@ -52,6 +52,15 @@ replace(
     '--data libraries=both --data evals=true ../.. "$app_dir" 2>/dev/null ||',
 )
 
+# validate renders the template through the root's copier.yml.
+replace(
+    stackr / "moon.yml",
+    "    command: 'make validate'\n    inputs:\n      - '**/*'\n      - '/pyproject.toml'\n"
+    "      - '/uv.lock'\n",
+    "    command: 'make validate'\n    inputs:\n      - '**/*'\n      - '/pyproject.toml'\n"
+    "      - '/uv.lock'\n      - '/copier.yml'\n",
+)
+
 # CI's Template and Smoke jobs run these, with their matrix values in the environment.
 replace(
     stackr / "moon.yml",
@@ -66,6 +75,7 @@ replace(
     inputs:
       - '**/*'
       - '/copier.yml'
+      - '/uv.lock'
       - '$TEMPLATE_LIBRARIES'
       - '$TEMPLATE_EVALS'
       - '$TEMPLATE_PYTHON'

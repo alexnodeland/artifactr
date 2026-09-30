@@ -27,7 +27,7 @@ Every Python project has these:
 | `format` | Format the code and apply safe lint fixes |
 | `check` | Everything CI runs for the project |
 
-Every package that ships a wheel also has `build`, which builds it as it is published, and `standalone`, which installs the wheel with its extras, and its siblings' wheels, outside the workspace, then imports every module.
+Every package that ships a wheel also has `build`, which builds it as it is published; `standalone`, which installs the wheel with its extras, and its siblings' wheels, outside the workspace, then imports every module; and `deptry`, which fails on an import the package doesn't declare. `check` runs both.
 
 The packages' own tasks:
 
@@ -39,6 +39,7 @@ The packages' own tasks:
 | `artifactr:test-pg`, `reflexr:test-pg` | Run the tests on PostgreSQL as well as SQLite |
 | `artifactr:app-up`, `reflexr:app-up` | Build and start the reference implementation on PostgreSQL, at <http://localhost:8000> |
 | `artifactr:pg-down`, `reflexr:pg-down` | Stop the package's contributor stack |
+| `docplan:image`, `oncall:image` | Build the reference implementation's image from the root, start it on PostgreSQL and stop it, as CI's Images job does |
 | `lattice:docs` | Build the documentation site in strict mode, and check that its lists rendered |
 | `lattice:docs-serve` | Serve the documentation site with live reload at <http://localhost:8000> |
 
@@ -73,7 +74,7 @@ The dev container (`.devcontainer/`) has uv, moon and Docker, so everything abov
 
 1. Branch from the latest `main`. Keep branches short-lived: hours to a day or two, not weeks.
 2. Keep pull requests small and focused on one change. Split large work into a sequence of PRs that each leave `main` green.
-3. CI must pass before merging: its one required check, `CI`, passes only when every job does.
+3. CI must pass before merging: its two required checks are `CI`, which passes only when every job does, and `Title`.
 4. Pull requests are squash-merged, so the PR title becomes the commit on `main`. Write it as a [Conventional Commit](https://www.conventionalcommits.org/).
 5. Delete the branch after merging. Don't stack branches on unmerged branches.
 
@@ -81,7 +82,7 @@ A change that spans packages lands in one pull request, so the packages never di
 
 ### Commit messages
 
-Commits and PR titles follow Conventional Commits, checked by a `commit-msg` hook and by CI:
+Commits and PR titles follow Conventional Commits, checked by a `commit-msg` hook and by the `Title` check:
 
 ```
 feat(core): add anchored text edits for Markdown artifacts
@@ -120,7 +121,7 @@ These are enforced by CI, for every package, and described in each package's qua
 - **ruff** for formatting and linting, with one configuration at the root, and Google-style docstrings on public API.
 - **No inline suppressions** in any Python in the repository: no `# type: ignore`, `# pyright: ignore`, `# noqa` or `# pragma: no cover`. Restructure the code instead; the root's `tests/test_quality.py` fails on any. Per-file ignores in the root `pyproject.toml` are configuration, reviewed as such.
 - **Warnings are errors** in the test suites.
-- **The libraries stay independent.** Each library's layering test lists what each of its modules may import, and each package's `standalone` task installs it outside the workspace.
+- **The libraries stay independent.** Each library's layering test lists what each of its modules may import, deptry fails on an import a package doesn't declare, and each package's `standalone` task installs it outside the workspace.
 
 ## Definition of done
 

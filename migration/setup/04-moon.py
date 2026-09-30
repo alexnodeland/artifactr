@@ -4,7 +4,7 @@ from pathlib import Path
 
 from lib import install, remove, replace, run
 
-install("03-moon")
+install()
 
 # The libraries' Makefiles become moon tasks: python.yml's lint, typecheck, test and format for
 # every Python project, and each project's own (schema, dashboards, pg-up, pg-down, app-up,

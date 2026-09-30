@@ -71,8 +71,9 @@ def move(source: str, destination: str) -> None:
     git("mv", source, destination)
 
 
-def install(step: str) -> None:
-    """Copy a step's prepared files (``files/<step>/``) into the checkout, at the same paths."""
+def install() -> None:
+    """Copy the running step's prepared files (``files/<step>/``) into the checkout."""
+    step = Path(sys.argv[0]).stem
     source = FILES / step
     if not source.is_dir():
         fail(f"no prepared files for {step}")

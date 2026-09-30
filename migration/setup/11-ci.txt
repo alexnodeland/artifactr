@@ -1,0 +1,40 @@
+ci: one set of workflows, hooks and repository files
+
+The packages' workflows, hooks, issue forms and pull request templates were copies of one
+another; lattice has one of each.
+
+- ci.yml runs on pull requests. Check, Tests and Images run their task in every project the
+  pull request touches, by its files or by its tasks' inputs (which cover uv.lock and the root's
+  configuration), and in every project that depends on one, all the way down, from moon's
+  project graph (scripts/affected.py): `moon ci --downstream deep` follows the task graph, and
+  would run an evalr-only change's checks in evalr alone. Check runs the checks on PostgreSQL 17,
+  with a database per library; Tests runs the tests on Python 3.13 and 3.14; Images builds and
+  starts docplan's and oncall's images. Template and Smoke run stackr's template and smoke tasks
+  through `moon ci`, with their matrix values in the environment, only when stackr's own inputs
+  change, since the template pins the libraries by revision. Dependency review and OSV watch the
+  dependencies. CI, the last job, passes when every job does.
+- title.yml checks that the pull request's title is a Conventional Commit, again whenever it is
+  edited. CI and Title are the two required checks.
+- docs.yml deploys the site from main; CI builds it strictly on pull requests.
+- nightly.yml runs every project's checks, the images, osv-scanner over uv.lock and a link
+  check, on pushes to main and every night.
+- release.yml: release-please's release pull request, as the release GitHub App, whose token is
+  minted for each run so the pull request's checks run; then each released package that ships
+  a wheel, built alone and attached to its release with a build-provenance attestation.
+  release-please's configuration lists each package's path, with the lock as an extra file; a
+  breaking change bumps the minor version before 1.0, as it always has here; its bootstrap is
+  the import; and each package's version in the manifest is its last tag's, or 0.0.0.
+- osv-scanner.toml records the advisories osv-scanner reports that don't apply, each with its
+  reason and a date by which it is reviewed again.
+- Every action is pinned to a commit, with its version beside it; each workflow grants nothing
+  at the top and each job what it needs, and no checkout keeps its credentials.
+- prek runs the hooks, on one .pre-commit-config.yaml: the hygiene hooks, stackr's JSON, shebang
+  and private-key checks for everything, Conventional Commits, ruff, yamllint and shellcheck for
+  stackr's files, actionlint, zizmor, and pyright through moon. The template's own hook
+  configuration is its applications', so .prekignore leaves it out.
+- Renovate replaces Dependabot, with its proto manager for .prototools, the pre-commit manager
+  for the hooks, the lockfile moving within the packages' ranges, a minimum release age on PyPI
+  as on npm, and PostgreSQL held at major 17.
+- .git-blame-ignore-revs names the commit that only sorted imports, and `make install` points
+  git blame at it.
+- The issue forms ask which package; one pull request template; one .editorconfig.

@@ -1,6 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:best-practices"],
+  "pre-commit": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "description": "Python ranges stay as written: the lockfile moves, and the packages' floors move by hand, with the code that needs them.",

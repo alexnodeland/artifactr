@@ -5,7 +5,7 @@ See stackr's RFC-0003, The uv workspace.
 
 from pathlib import Path
 
-from lib import fail, install, locked, move, remove, replace, run
+from lib import fail, install, move, remove, replace, run
 
 # docplan and oncall leave their libraries: in lattice they would be workspace members inside
 # another member, which uv refuses.
@@ -13,7 +13,7 @@ for library, example in (("artifactr", "docplan"), ("reflexr", "oncall")):
     move(f"packages/{library}/examples/{example}", f"examples/{example}")
     Path(f"packages/{library}/examples").rmdir()
 
-install("02-workspace")
+install()
 
 # One lock, one .python-version and one .gitignore, at the root. The packages' .gitignore files
 # were one file, apart from a line or two: evalr's is that file, and stackr keeps the lines that
@@ -259,8 +259,3 @@ replace(
 )
 
 run("uv", "lock", "--quiet")
-
-# With one configuration, a sibling package is first-party wherever it is imported, as the
-# package's own modules are, so the imports that name a sibling are sorted again, by the ruff
-# the lock pins.
-run("uvx", f"ruff@{locked('ruff')}", "check", "--quiet", "--select", "I", "--fix", ".")

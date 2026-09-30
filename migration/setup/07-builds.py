@@ -9,9 +9,9 @@ manifests and the sources it installs.
 
 from pathlib import Path
 
-from lib import install, move, remove, replace
+from lib import install, remove, replace
 
-install("05-builds")
+install()
 
 for library, example in (("artifactr", "docplan"), ("reflexr", "oncall")):
     replace(
@@ -49,15 +49,47 @@ replace(
     "",
 )
 
-# The libraries' .dockerignore files were for builds from their roots; lattice's root has one,
-# for any build without its own.
-move("packages/artifactr/.dockerignore", ".dockerignore")
-replace(
-    ".dockerignore",
-    "# What docker builds from the repository root leave out.\n",
-    "# What docker builds from lattice's root leave out, unless a Dockerfile has its own list.\n",
-)
-remove("packages/reflexr/.dockerignore")
+# The libraries' .dockerignore files were for builds from their roots. Each image's own list,
+# beside its Dockerfile, replaces them.
+remove("packages/artifactr/.dockerignore", "packages/reflexr/.dockerignore")
+
+# CI's Images job builds each image from the root and starts it on its library's contributor
+# stack, whose healthcheck GETs /; the stack stops afterwards, whatever happened. Both publish
+# port 8000, so the two never run at once. The inputs are what the image is built from.
+IMAGE = """
+tasks:
+  image:
+    description: "Build {example}'s image from lattice's root, and start it on PostgreSQL"
+    script: >-
+      (docker compose up --detach --build --wait {example}
+      || (docker compose logs {example}; docker compose down --volumes; exit 1))
+      && docker compose down --volumes
+    env:
+      COMPOSE_FILE: '../../packages/{library}/compose.yaml'
+      COMPOSE_PROFILES: 'app'
+    inputs:
+      - 'Dockerfile'
+      - 'Dockerfile.dockerignore'
+      - 'README.md'
+      - 'pyproject.toml'
+      - 'src/**/*'
+      - '/pyproject.toml'
+      - '/uv.lock'
+      - '/packages/*/pyproject.toml'
+      - '/examples/*/pyproject.toml'
+      - '/packages/{library}/compose.yaml'
+      - '/packages/{library}/README.md'
+      - '/packages/{library}/LICENSE'
+      - '/packages/{library}/src/**/*'
+      - '/packages/evalr/README.md'
+      - '/packages/evalr/LICENSE'
+      - '/packages/evalr/src/**/*'
+    options:
+      mutex: 'reference-app'
+"""
+for library, example in (("artifactr", "docplan"), ("reflexr", "oncall")):
+    path = Path(f"examples/{example}/moon.yml")
+    path.write_text(path.read_text() + IMAGE.format(library=library, example=example))
 
 # One dev container, at the root: the libraries' were each built on their own contributor
 # stack, and stackr's drove the host's Docker.

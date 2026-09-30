@@ -1,0 +1,21 @@
+docs: the changelogs' history, generated once, and git-cliff retired
+
+From here on release-please writes each package's changelog, from the import on, so git-cliff
+writes each package's history once more and retires: every cliff.toml, stackr's changelog
+target and the git-cliff dependency go.
+
+git-cliff ran in each package's rewritten history, from the package's directory, with the
+package's own cliff.toml, changed only where the import changed the history:
+
+- the headings trim the tags' new prefix (artifactr-v0.1.0), and the release links point at
+  lattice, where the tags are;
+- the preprocessor that links a squash commit's pull request matches the rewritten reference
+  and links it to the old repository, as before, and another links each other reference, such
+  as alexnodeland/<repo>#N mid-sentence, to its issue or pull request;
+- the eight prototype commits artifactr's history skips are named by their new SHAs, from
+  filter-repo's commit map.
+
+What no release carries is headed "Before lattice", with no compare link. release-please reads
+the history only from the import on, and writes each release above that heading, so those
+changes are listed there and nowhere else. relayr's history gets its first changelog, and its
+section of the site a page for it.

@@ -1,5 +1,6 @@
-# On pushes to main and every night: every project's checks, whatever changed, osv-scanner over
-# the lockfile, and a check of the links in the Markdown.
+# On pushes to main and every night: every project's checks, whatever changed, the reference
+# implementations' images, osv-scanner over the lockfile, and a check of the links in the
+# Markdown. CI runs on pull requests only, so this is what runs on main.
 
 name: Nightly
 
@@ -50,6 +51,20 @@ jobs:
         run: psql -h localhost -U postgres -c 'CREATE DATABASE artifactr' -c 'CREATE DATABASE reflexr'
       - run: uv sync --locked --all-packages --all-groups --all-extras
       - run: moon run :check
+
+  images:
+    name: Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: moonrepo/setup-toolchain@261c62cb5b0f580c7be7c8cd0f023a2e96756095 # v0.6.4
+        with:
+          auto-install: true
+      - run: moon run :image
 
   osv:
     name: OSV
