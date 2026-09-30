@@ -178,6 +178,39 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **Sequencing:** the setup commit changes only what the move forces, or what would otherwise be written twice (docs, shared configuration, Renovate, prek, release-please). Anything that could change test outcomes lands as its own PR after the move: ty, pytest-randomly, timeouts, and the new checks.
 - The simplicity review's report is `scratchpad/rfc-0003-review.md` (session ebd41844).
 
+**Agents, process and the dev container, signed off 2026-09-30.** These go into RFC-0003 as two compact sections plus a phase.
+- **Instructions:** `AGENTS.md` only, one at the root and one per package, with no CLAUDE.md. Claude Code reads AGENTS.md natively when there's no CLAUDE.md; verify this. `.claude/rules/` holds rules scoped by path. A test checks that every path, moon task and ADR the files mention exists, and holds them to a line budget.
+- **Packaging:** a repo-local `lattice` plugin, listed in `.claude-plugin/marketplace.json`, carries the family's skills, subagents and hooks, with a `claude plugin eval` suite per skill. Package skills live in `packages/<p>/.claude/skills/`. Stretch goal: each library ships a plugin for its downstream users.
+- **Hooks:** one set at the root.
+  - Before a command or edit, it blocks the never-list: force-pushes and pushes to main, `--no-verify`, admin merges, bare `git stash`, lint and type suppressions, edits to generated files, changelogs, lockfiles or accepted ADRs, attribution trailers, and `.env` reads.
+  - After an edit, it formats and reports lint.
+  - When Claude tries to finish, it refuses until `moon run :check --affected` passes, then a prompt-type hook judges whether the work is linked to its issue and updates ADRs, RFCs and docs.
+- **Subagents:** a read-only reviewer, a security reviewer, and editing agents with worktree isolation.
+- **Claude on GitHub** (`claude-code-action@v1`): every PR from the repo is reviewed with the review skill and REVIEW.md, never on forks. `@claude` works for the owner only. A weekly skill gardener opens an issue, then a PR that must pass the skill evals. It needs a secret the maintainer adds.
+- **GitHub process:**
+  - issue forms with a package dropdown; `pkg:*` labels applied by the labeler (issue types are org-only)
+  - sub-issues for RFC phases
+  - a Projects board with auto-add and auto-close
+  - a required check that each PR closes an issue, with release-please and Renovate exempt
+- **Self-improvement:**
+  - skill evals as a CI gate, run weekly and whenever skills, agents or AGENTS.md change
+  - a retro comment per PR, marked so it can be found
+  - Git AI acceptance stats
+  - Claude telemetry into stackr was declined
+- **Chats linked to changes: Git AI** (Apache-2.0).
+  - Attribution lives in git notes; chats stay local and are never pushed. It uses no git hooks.
+  - `.github/workflows/git-ai.yaml` runs on merged PRs to keep attribution through squash merges, with a pinned version and a verified checksum.
+  - `.git-ai-ignore` covers generated files.
+  - Maintainer's config: `allow_repositories` set to alexnodeland/*, and `telemetry_oss` off. The maintainer installs it; I don't.
+- **Dev container:** one at the root, replacing the four per-repo ones. It supersedes artifactr ADR-0030 and reflexr ADR-0021.
+  - Docker-in-Docker.
+  - An agent firewall, based on Anthropic's reference init-firewall. Allow the registries: Docker Hub, GHCR and public.ecr.aws for Supabase.
+  - CI builds and checks a prebuilt image on GHCR, with Codespaces prebuilds on top.
+  - `devcontainer-lock.json` pins the features, and Renovate updates it.
+  - proto installs moon, uv and Bun from `.prototools`, and `uv python install` provides 3.12–3.14.
+  - Chromium for Playwright, plus the Claude Code feature and Git AI pinned.
+  - Named volumes for the caches and `.venv`, and the VS Code extensions and settings.
+
 **portalr** (the web app), to design in an RFC after the migration:
 - Tiers and stack:
   - two apps, `app` (usage) and `admin` (management plane), from one Bun workspace, sharing `client` (TypeScript types generated from the libraries' schemas) and `ui`
