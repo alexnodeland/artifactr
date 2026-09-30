@@ -123,6 +123,45 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - Stop background tasks with `task.cancel(); await asyncio.gather(*tasks, return_exceptions=True)`. `asyncio.wait` belongs only inside `_to_the_end`.
   - Squash merges use commit messages, so keep each PR to one commit whose message matches its title.
 
+## Maintainer decisions, 2026-09-30 (not yet in any repo's RFC or ADR; write them into the RFCs named)
+
+**Monorepo `lattice`** (stackr RFC-0003 is being written, then its simplicity review, then AskUserQuestion for the rest):
+- `alexnodeland/lattice`, public. moon orchestrates tasks over a uv workspace (Python) and a Bun workspace (TypeScript). The maintainer chose moon over Pants (no Bun support) and over a plain justfile.
+- Packages keep their names (artifactr, reflexr, evalr, stackr, relayr, grantr, portalr); only the monorepo drops the -r.
+- **Every package stays installable standalone downstream:** its own pyproject, name (artifactr stays `artifactr-ai`), version and published version ranges. Workspace path sources are dev-only. CI builds each wheel in isolation, installs it in a clean venv and runs a smoke test. Per-package tags; git installs use `#subdirectory=`.
+- One docs site at `lattice.alexnodeland.com`, a section per package; the old subdomains redirect.
+- Repo settings approved: the siblings' ruleset (applied after the initial import), Pages from Actions, the custom domain, and secret scanning.
+- The maintainer will remove or archive the relayr, portalr and grantr repos personally. Move relayr's `chore/foundation` branch (fd54088) into lattice.
+- The loop pauses for the migration. In-flight PRs are merged; the old repos are frozen as of artifactr 6eca8e0, reflexr d11aece, evalr 7a29012 and stackr a916f07 or later.
+
+**portalr** (the web app), to design in an RFC after the migration:
+- Tiers and stack:
+  - two apps, `app` (usage) and `admin` (management plane), from one Bun workspace, sharing `client` (TypeScript types generated from the libraries' schemas) and `ui`
+  - React on Vite, with Biome, Vitest, strict TypeScript (`noUncheckedIndexedAccess`) and Bun
+  - styling: Radix primitives, CSS Modules, and CSS variables from the family's brand `tokens.json`
+- The management plane's backend is a FastAPI **console service** shipped from portalr as its own container. It holds the secrets (Supabase admin, Langfuse, Prometheus, evalr) and runs in stackr's Compose.
+- Usage tier: chat with agents, artifacts, and reflexr rules, triggers, runs and stored rules. Tenant, workspace, group and user management lives here too.
+- Admin tier: MCP server configs, links to deeper diagnostics, traces, feedback triage, running and viewing evals, and tenant, workspace and group analytics.
+- Testing and quality:
+  - **BDD**: Gherkin `.feature` files are the spec, with end-to-end tests derived by playwright-bdd plus axe
+  - **Bruno** collections for every HTTP API, run with `bru run` in CI
+  - Storybook for `ui` (a11y and interaction checks via Vitest)
+  - MSW with schema-typed mocks
+  - knip, size-limit and Lighthouse CI
+  - browser OpenTelemetry propagating `traceparent`
+  - OpenAPI documents checked in, with drift checks
+  - the security baseline: CSP and headers, osv-scanner, secret scanning
+- Build order: all of it at once, after the migration (the maintainer said "all of it now").
+
+**grantr** (IAM), its own library:
+- Users (Supabase Auth), groups, roles (sets of fine-grained permissions such as `threads:post` or `rules:install`), and bindings of a role to a user or group on a tenant or workspace scope. It follows GCP IAM and Kubernetes RBAC.
+- A pure policy core; a storage port with in-memory and SQL adapters on Supabase's PostgreSQL; a contract suite; and adapters that become artifactr's and reflexr's `authorize` hooks and reflexr's `StoredRules.allow`.
+- Property-based tests with Hypothesis, and Gherkin policy specs with pytest-bdd.
+
+**Parity gaps to fix after the migration:**
+- artifactr's MCP tool errors don't append validation `errors` the way reflexr's `_tool_error` does.
+- docplan's terminal client shows notices as messages.
+
 ## In flight
 | Work | Repo | State |
 |---|---|---|
