@@ -134,6 +134,17 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - The maintainer will remove or archive the relayr, portalr and grantr repos personally. Move relayr's `chore/foundation` branch (fd54088) into lattice.
 - The loop pauses for the migration. In-flight PRs are merged; the old repos are frozen as of artifactr 6eca8e0, reflexr d11aece, evalr 7a29012 and stackr a916f07 or later.
 
+**Signed off on stackr RFC-0003 (PR #43), 2026-09-30.** Write these into the RFC together with the simplicity review's findings, then set its status to Accepted:
+- **D1: leave the old repos alone.** No pointer README, no redirect site, no archiving, and Actions stay as they are; the maintainer handles the repos later. The RFC should say that the old subdomains keep serving stale docs until then, and that a CNAME left pointing at a deleted repo can be taken over.
+- **D2:** moon, plus a thin root Makefile (install, check, docs, docs-serve, changelog), plus stackr's operator targets. The libraries' Makefiles go.
+- **D3:** moon's unstable Python toolchain stays **off** until it's stable. Tasks are `uv run` commands, and `dependsOn` is explicit. This changes the RFC's recommendation.
+- **D4:** the template pins libraries to Copier's `_copier_conf.vcs_ref_hash`; `bump-libraries` retires.
+- **D5:** Bruno collections live per package, in `packages/<name>/bruno/`.
+- **Issues:** transfer the open ones (artifactr 4, reflexr 3, stackr 6) with `gh issue transfer`, rewriting bare `#N` references.
+- **relayr's distribution name is `relayr-ai`;** the import stays `relayr`. `stackr` is also taken on PyPI, but stackr doesn't ship a wheel.
+- **The RFC is stale in two places:** artifactr #75 and reflexr #90 were merged on 2026-09-30. It also says "himself"; reword it without a pronoun.
+- **Python matrix:** lattice is public, so Actions minutes are free. Run 3.13 and 3.14 on every PR.
+
 **portalr** (the web app), to design in an RFC after the migration:
 - Tiers and stack:
   - two apps, `app` (usage) and `admin` (management plane), from one Bun workspace, sharing `client` (TypeScript types generated from the libraries' schemas) and `ui`
