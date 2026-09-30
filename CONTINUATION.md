@@ -123,6 +123,19 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - Stop background tasks with `task.cancel(); await asyncio.gather(*tasks, return_exceptions=True)`. `asyncio.wait` belongs only inside `_to_the_end`.
   - Squash merges use commit messages, so keep each PR to one commit whose message matches its title.
 
+## State, 2026-09-30 (latest)
+
+- **The lattice RFC is Accepted and merged:** stackr RFC-0003, PR #43, at 455a31c. It is the spec for the move; don't re-list its decisions anywhere else.
+- **The old repos are frozen.** Merge nothing in artifactr, reflexr, evalr or stackr, and leave Dependabot's PRs unmerged; Renovate in lattice replaces them.
+- **The relayr agent is retired.** Its `chore/foundation` branch (fd54088) gets imported.
+- **Phase 1, the rehearsal, is running.**
+  - Local only, in `~/anodeland/projects/code/lattice-rehearsal/`.
+  - The migration scripts get committed to this branch, under `migration/`, not into lattice.
+  - The Bun root (package.json, bun.lock, biome, tsconfig, knip, size-limit, the JS toolchains) waits for the portal RFC.
+  - The initial import is a short series of focused commits, not one setup commit.
+  - An independent simplicity review of the rehearsal tree comes before the day; it's the only review the import gets.
+- **Left for the maintainer:** my `git fetch --prune` / `pull` on stackr's local main was denied, so the local stackr checkout is behind origin by the RFC merge. The worktree and branch are already removed.
+
 ## Maintainer decisions, 2026-09-30 (not yet in any repo's RFC or ADR; write them into the RFCs named)
 
 **Monorepo `lattice`** (stackr RFC-0003 is being written, then its simplicity review, then AskUserQuestion for the rest):
