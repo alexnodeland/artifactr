@@ -158,10 +158,13 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
     - #38 (fixes #37): lychee retries
     - Issues #25–#28 are closed. The site is live in the brand.
   - **Ink allocation (the maintainer's decision), recorded in ADR-0001:** portalr is reserved for C+M+Y, with app and admin variants; grantr for Y+K. Both are drawn with their packages.
+  - **Phase 3 closed** (#39 merged; #24 and #33 closed).
   - **Open:**
     - **#35, the Runner fix for #29** (a message posted as a run ends gets no reply). The adversarial review found a critical flaw (replay from seq 0, looping forever), lost second replies, and double execution. It's being reworked with a durable delivered position. When the rework lands, ask the maintainer to confirm one semantics change: messages committed directly become the next turn.
     - **#33 follow-ups** are with an agent: relayr's landing page, evalr's card link, the ADR template deduplication, and ticking phase 3. It closes #33 and #24.
-    - **Renovate** still fails until the maintainer grants the App's new permissions on its installation.
+    - **Renovate:** the maintainer will grant `alexnodeland-lattice` Renovate's permissions on 2026-10-01 (Administration read; Checks, Commit statuses, Issues and Workflows write; Dependabot alerts read) and accept them on the installation. Then run `gh workflow run renovate.yml -R alexnodeland/lattice` and check that it opens its dependency dashboard.
+    - **#35 is on its final cycle.** Save taken in the same transaction as the write that consumes the message, and fix review 3's findings 1–3. ADR-0055 is rewritten around invariants I1–I7, with one exception (a lapsed claim). Then comes a fourth review, verifying against those invariants; merge if they hold. The maintainer's semantics decisions: the log decides, a fresh start on upgrade (migration 0005), and a message is a message.
+    - **#40:** two phase 3 leftovers (the packages' architecture pointers, and five RFC templates).
   - **Lesson:** before merging the base of a stacked PR, retarget the stacked PR to `main`. Deleting the base branch closed #31, which reopened as #36.
   - **Nightly** fails on the #29 race until #35 lands.
 - **Migration artifacts** are under `migration/` on this branch:
