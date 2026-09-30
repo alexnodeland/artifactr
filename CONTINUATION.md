@@ -73,27 +73,83 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - RFC-0003 (#75)
   - telemetry (#76)
 
-## In flight
+## Cleanup wave: done (all merged, each after an independent simplicity review)
+- **evalr:**
+  - #33: measures, with a linear rewrite measure
+  - #34: one set of Langfuse score adapters; `Score` validates values, and a span needs a trace; one docs build, deploys in order
+- **artifactr:**
+  - #64: MCP logging
+  - #65: traceparent
+  - #66: message ids used once
+  - #67: composable telemetry, untraced polling, mirror cursors
+  - #69: cancel-safe SQL storage with `_to_the_end` and `_awaited_to_the_end`, byte-identical to reflexr's; `Runner.aclose`
+  - #70:
+    - one `Runner.execute`
+    - `Workspaces.open(authorize=)`
+    - reads owned by the workspace
+    - `seal`
+    - scores on evalr 7a29012
+    - ADR-0048 and ADR-0049
+    - FIFO command memory
+- **reflexr:**
+  - #76: telemetry
+  - #79:
+    - cancel-safe storage (the same helper)
+    - `OpenTransactions` deleted
+    - `serve` simplified
+    - ADR-0041 "Executing runs"
+    - ADR-0042 "Cancel-safe storage"
+  - #80:
+    - `core.holds`
+    - `Workspaces.open(authorize=)`
+    - no checkpoint before a decision
+    - parity: `McpContext`, `function_model`, the participant dedup key
+    - ADR-0043 and ADR-0044
+  - #81: scores on evalr 7a29012, ADR-0045
+  - #82: refusals carry the rejection, and the "Aligned with artifactr" table is updated
+- **stackr:**
+  - #36:
+    - the template on the libraries' main
+    - graceful stop and a bounded uvicorn drain
+    - evalr comes only from the libraries' pins, and the pins are derived (ADR-0013)
+  - #38:
+    - `scripts/_env.py`
+    - `template/stackr.env`
+    - `check-config` scans every tracked file
+    - `smoke` reads `supabase status -o json` with jq
+    - one docs build (ADR-0014)
+    - an evergreen architecture doc
+- **Idioms settled:**
+  - Stop background tasks with `task.cancel(); await asyncio.gather(*tasks, return_exceptions=True)`. `asyncio.wait` belongs only inside `_to_the_end`.
+  - Squash merges use commit messages, so keep each PR to one commit whose message matches its title.
 
+## In flight
 | Work | Repo | State |
 |---|---|---|
-| Template on the libraries' main: graceful stop, evalr from the libraries' pins, ADR-0013 | stackr #36 | applying review fixes (uvicorn drain timeout, ADR trims) |
-| One set of Langfuse score adapters, `Score` validation, one docs build | evalr #34 | under independent review |
-| Cleanup PR 1: cancel-safe SQL storage (`_to_the_end`), delete `OpenTransactions`, simplify `serve`, supersede ADR-0027. PR 2: the rest of the review | reflexr | agent building PR 1 |
-| Cleanup PR 1: cancel-safe SQL storage (the same helper), `Runner.aclose`. PR 2: one `Runner.execute`, surface helper, reads, `seal`, ADR-0012+0022 consolidation | artifactr | agent building PR 1 |
+| #45 implementation: every event type `namespace:name`, qualified rule names (code rules too), registry as a view, `reflexr:` facts, migration, "did you mean" hints | reflexr | agent building (worktree `event-namespaces-impl`) |
 
 ## Next
-- After evalr #34: adoption PRs in artifactr and reflexr, deleting their `langfuse/scores.py`, bumping the evalr pin (both libraries in one sitting, same commit), and consolidating artifactr ADR-0038 and reflexr's scores ADRs.
-- After the reflexr cleanup: #45's implementation (agent on hold, worktree `event-namespaces`), including qualified rule names.
-- Then RFC-0003's implementation; reflexr#72; ask about creating relayr.
-- stackr cleanup: `scripts/_env.py`, Supabase names, CI docs duplication, `architecture.md`, jq instead of Python `eval`, the `Mirrors` supervisor (after the libraries offer all-workspace mirrors). Adopt telemetry in the template: contributions, `langfuse="scores"`, `cursor=`.
-- artifactr#68 (a crashed run stays running); #62 and #63 (workspace discovery, notices); #54; reflexr#53.
+- After #45: one stackr template bump onto the libraries' final APIs:
+  - composable telemetry (`telemetry()` contributions, `langfuse="scores"`, `cursor=`)
+  - `Runner.execute(command_id=)`, and `Workspaces.open(authorize=)`
+  - scores on evalr, qualified event and rule names
+  - the reflexr-only variant can use reflexr's `function_model` and `McpContext` (#77 and #78 are closed)
+- Then:
+  - RFC-0003's implementation (runtime rules, with typed params through the action port)
+  - reflexr #72
+  - ask the maintainer about creating relayr
+- Also open:
+  - artifactr #68 (a crashed run stays running), #62, #63, #54
+  - reflexr #53
+  - stackr roadmap #3 to #7
+  - the libraries' own `make docs`/CI docs builds could adopt evalr's one-build arrangement too
 
 ## State notes
+- **An empty Docker network named `stackr`** was created by the stackr cleanup agent while testing; its removal was denied. It's left for the maintainer (`docker network rm stackr`).
 - **stackr's local stack is down.** `make up` restarts it.
-- **Containers:** `reflexr-postgres-1` and `artifactr-postgres-1` (from `make pg-up`) are running for tests.
-- **artifactr worktree `agent-a177dac1d942b45bc`** (branch `feat/sql`) is locked by another process. Leave it and its remote branch.
-- A stray `/private/tmp/pyrightconfig.json` from other work hijacks pyright for apps under /tmp; use `pyright -p .`.
+- **Containers:** `reflexr-postgres-1` and `artifactr-postgres-1` are running for tests.
+- **artifactr worktree `agent-a177dac1d942b45bc`** (branch `feat/sql`) is locked by another process. Leave it.
+- A stray `/private/tmp/pyrightconfig.json` hijacks pyright under /tmp; use `pyright -p .`.
 
 ## Notes for artifactr #49 and #51, from the agent that read the code
 - **The dedup key.** The router's `_Results` (`src/artifactr/fastapi/router.py`) keys results by `(workspace_id, repr(actor), command_id)` and has no tenant. The shared version should add `workspace.tenant_id`.
