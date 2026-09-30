@@ -128,12 +128,22 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **The lattice RFC is Accepted and merged:** stackr RFC-0003, PR #43, at 455a31c. It is the spec for the move; don't re-list its decisions anywhere else.
 - **The old repos are frozen.** Merge nothing in artifactr, reflexr, evalr or stackr, and leave Dependabot's PRs unmerged; Renovate in lattice replaces them.
 - **The relayr agent is retired.** Its `chore/foundation` branch (fd54088) gets imported.
-- **Phase 1, the rehearsal, is running.**
-  - Local only, in `~/anodeland/projects/code/lattice-rehearsal/`.
-  - The migration scripts get committed to this branch, under `migration/`, not into lattice.
+- **Phase 1, the rehearsal, has passed and is in its edit pass.**
+  - It runs locally only, in `~/anodeland/projects/code/lattice-rehearsal/`.
+  - `migration/lattice.sh WORK_DIR` goes from fresh clones to the finished tree. The first pass is committed here under `migration/` (d5fc85e) and passed all ten exit criteria.
   - The Bun root (package.json, bun.lock, biome, tsconfig, knip, size-limit, the JS toolchains) waits for the portal RFC.
-  - The initial import is a short series of focused commits, not one setup commit.
-  - An independent simplicity review of the rehearsal tree comes before the day; it's the only review the import gets.
+  - **The independent review is done.** It found 13 issues, and the rehearsal agent is applying all of them, plus the decisions below. The biggest two:
+    - `moon ci --downstream deep` doesn't run dependents' tasks.
+    - The changelogs' `## [Unreleased]` breaks release-please.
+  - **The dev container is verified:** it builds and starts, the tools and Docker inside it work, and `relayr:check` passes.
+  - **Decided by the maintainer, 2026-09-30:**
+    - **litellm:** the lock stays at 1.83.0, as artifactr's already does. pydantic-ai's openai extra needs openai>=3.19, and every later litellm pins openai<3. `osv-scanner.toml` ignores its 13 proxy-server advisories, plus diskcache's unfixed pickle advisory, until 2026-12-31, with reasons.
+    - **deptry:** each package declares what it imports on the day, in its own `build:` commit, and deptry joins `check`.
+    - **Release token:** a GitHub App, whose token release.yml mints per run. The maintainer creates and installs the App and adds its two secrets.
+  - **Coming from the edit pass:**
+    - `migration/rfc-0003-amendments.md`, which becomes the first lattice PR after the day. stackr stays frozen: amending the RFC there would move the snapshot.
+    - `migration/DAY.md`, the day's runbook.
+  - **Then:** recommit, report, and ask the maintainer before phase 2.
 - **Left for the maintainer:** my `git fetch --prune` / `pull` on stackr's local main was denied, so the local stackr checkout is behind origin by the RFC merge. The worktree and branch are already removed.
 
 ## Maintainer decisions, 2026-09-30 (not yet in any repo's RFC or ADR; write them into the RFCs named)
