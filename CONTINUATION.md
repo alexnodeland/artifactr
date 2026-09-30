@@ -128,22 +128,25 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **The lattice RFC is Accepted and merged:** stackr RFC-0003, PR #43, at 455a31c. It is the spec for the move; don't re-list its decisions anywhere else.
 - **The old repos are frozen.** Merge nothing in artifactr, reflexr, evalr or stackr, and leave Dependabot's PRs unmerged; Renovate in lattice replaces them.
 - **The relayr agent is retired.** Its `chore/foundation` branch (fd54088) gets imported.
-- **Phase 1, the rehearsal, has passed and is in its edit pass.**
-  - It runs locally only, in `~/anodeland/projects/code/lattice-rehearsal/`.
-  - `migration/lattice.sh WORK_DIR` goes from fresh clones to the finished tree. The first pass is committed here under `migration/` (d5fc85e) and passed all ten exit criteria.
+- **Phase 1 is done: the migration is rehearsed, reviewed, fixed and re-verified. Phase 2 waits for the maintainer's go.**
+  - `migration/lattice.sh WORK_DIR` goes from fresh clones to the finished tree. It pins all five source SHAs and makes 16 first-parent commits. With `LATTICE_DATE` set, two runs give the same HEAD. The final rehearsed tree is `lattice-rehearsal/work/runD/lattice`.
+  - `migration/DAY.md` is the day's runbook, with the maintainer-only steps marked.
+  - `migration/rfc-0003-amendments.md` holds 20 RFC corrections, and becomes the first lattice PR (step 5).
   - The Bun root (package.json, bun.lock, biome, tsconfig, knip, size-limit, the JS toolchains) waits for the portal RFC.
-  - **The independent review is done.** It found 13 issues, and the rehearsal agent is applying all of them, plus the decisions below. The biggest two:
-    - `moon ci --downstream deep` doesn't run dependents' tasks.
-    - The changelogs' `## [Unreleased]` breaks release-please.
-  - **The dev container is verified:** it builds and starts, the tools and Docker inside it work, and `relayr:check` passes.
+  - **Review fixes:**
+    - `scripts/affected.py` replaces `moon ci --downstream deep` on PRs, because moon's version doesn't reach dependents. It fails loudly on a base ref that can't be resolved.
+    - Changelog history sits under `## [Before lattice]`.
+    - Absolute README links, and an `image` task per example.
+    - `title.yml` is a second required check.
+    - A `style:` commit for the re-sort, with `.git-blame-ignore-revs`.
+  - **Verified:** `moon run :check` (45 tasks), 100% coverage, the docs strict build, lychee, osv-scanner with the ignores, deptry, actionlint and zizmor, both images, the dev container, and Copier.
+  - **Not verifiable locally:** release-please end to end, and stackr's full smoke. The day's `uv.lock` is resolved fresh, so step 2 re-runs `:check` and the osv scan.
   - **Decided by the maintainer, 2026-09-30:**
     - **litellm:** the lock stays at 1.83.0, as artifactr's already does. pydantic-ai's openai extra needs openai>=3.19, and every later litellm pins openai<3. `osv-scanner.toml` ignores its 13 proxy-server advisories, plus diskcache's unfixed pickle advisory, until 2026-12-31, with reasons.
     - **deptry:** each package declares what it imports on the day, in its own `build:` commit, and deptry joins `check`.
     - **Release token:** a GitHub App, whose token release.yml mints per run. The maintainer creates and installs the App and adds its two secrets.
-  - **Coming from the edit pass:**
-    - `migration/rfc-0003-amendments.md`, which becomes the first lattice PR after the day. stackr stays frozen: amending the RFC there would move the snapshot.
-    - `migration/DAY.md`, the day's runbook.
-  - **Then:** recommit, report, and ask the maintainer before phase 2.
+  - stackr stays frozen: amending the RFC there would move the snapshot, so the amendments land in lattice instead.
+  - **Before any go, the maintainer must:** verify the domain (the Pages TXT record), and create the `lattice-release` App with its Client ID and private key in hand (DAY.md step 0).
 - **Left for the maintainer:** my `git fetch --prune` / `pull` on stackr's local main was denied, so the local stackr checkout is behind origin by the RFC merge. The worktree and branch are already removed.
 
 ## Maintainer decisions, 2026-09-30 (not yet in any repo's RFC or ADR; write them into the RFCs named)

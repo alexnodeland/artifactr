@@ -52,6 +52,14 @@ REFLEXR_TEST_POSTGRES_URL=postgresql+asyncpg://postgres:lattice@localhost:54341/
 docker stop lattice-day-pg
 ```
 
+`uv.lock` is resolved on the day, from the pinned sources and PyPI as it is then, so it can differ from the rehearsed one. The checks above cover the tests; scan it for advisories as nightly does, since the pull-request scan reports only what a change adds:
+
+```sh
+docker run --rm -v "$PWD":/src:ro -w /src ghcr.io/google/osv-scanner:v2.6.0 scan --lockfile=uv.lock
+```
+
+It must end with "No issues found"; `osv-scanner.toml` filters the 14 known advisories.
+
 The rewritten messages carry 18 closing keywords that point at the old repositories, such as `Closes alexnodeland/artifactr#63`. When `main` is pushed, none may point at an issue that is still open. On 2026-09-30 none did. Check again:
 
 ```sh
@@ -260,6 +268,7 @@ Done when: each old issue URL lands in lattice, `gh issue list -R alexnodeland/l
   - stackr's docs;
   - `[project.urls]` in each package's `pyproject.toml`: Homepage and Documentation become `https://lattice.alexnodeland.com/<package>/`; Repository becomes `https://github.com/alexnodeland/lattice`; Issues becomes `https://github.com/alexnodeland/lattice/issues`; Changelog becomes `https://github.com/alexnodeland/lattice/blob/main/packages/<package>/CHANGELOG.md`.
   - The READMEs' links became absolute in the setup commits, so they need nothing here.
+  - Open the issue that tracks lifting `osv-scanner.toml`'s ignores (litellm allowing openai 3, or a fixed diskcache), and name it in each ignore's `reason`, in the same pull request.
 - Restart the loop against lattice.
 - **Maintainer, phase 7:** the Claude token secret, `gh secret set CLAUDE_CODE_OAUTH_TOKEN -R alexnodeland/lattice`, and the Codespaces prebuilds, in the repository's Codespaces settings.
 
