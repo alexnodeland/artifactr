@@ -148,6 +148,22 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - **#18:** the `$…_TEST_POSTGRES_URL` moon inputs make every PR run artifactr's and reflexr's tests, plus their dependents'.
   - **docplan's tests** hung in CI 3 times in 5 runs, and never locally (macOS, Linux, starved CPU, small thread pool). With #4, a hang now fails in 60s with every thread's stack; open an issue from the first stack.
   - **Phase 3:** about 100 docs links, install lines included, still name the old repos. That's the phase 3 exit criterion. Phases 3–7 follow as lattice PRs linked to issues.
+- **Phase 3, 2026-09-30.** The maintainer extended it: lattice's own documentation should be on par with the packages', with its own brand and a fully featured README.
+  - **Merged:**
+    - #23 (fixes #18)
+    - #30: the family's `docs/architecture.md` and ADRs 0002–0009
+    - #34: the brand. It's "Cell", one lattice cell in cyan alone, overprint `#005A87`, recorded in ADR-0001, with the assets, site styling and README.
+    - #36: 12 package ADRs, and 37 status lines changed
+    - #32: the packages' docs describe lattice
+    - #38 (fixes #37): lychee retries
+    - Issues #25–#28 are closed. The site is live in the brand.
+  - **Ink allocation (the maintainer's decision), recorded in ADR-0001:** portalr is reserved for C+M+Y, with app and admin variants; grantr for Y+K. Both are drawn with their packages.
+  - **Open:**
+    - **#35, the Runner fix for #29** (a message posted as a run ends gets no reply). The adversarial review found a critical flaw (replay from seq 0, looping forever), lost second replies, and double execution. It's being reworked with a durable delivered position. When the rework lands, ask the maintainer to confirm one semantics change: messages committed directly become the next turn.
+    - **#33 follow-ups** are with an agent: relayr's landing page, evalr's card link, the ADR template deduplication, and ticking phase 3. It closes #33 and #24.
+    - **Renovate** still fails until the maintainer grants the App's new permissions on its installation.
+  - **Lesson:** before merging the base of a stacked PR, retarget the stacked PR to `main`. Deleting the base branch closed #31, which reopened as #36.
+  - **Nightly** fails on the #29 race until #35 lands.
 - **Migration artifacts** are under `migration/` on this branch:
   - `DAY.md`, with an "As run" section
   - `rfc-0003-amendments.md`, the source for phase 3's ADRs
