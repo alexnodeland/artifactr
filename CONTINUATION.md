@@ -126,13 +126,11 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 ## Paused, 2026-09-30 (the maintainer: "cut it off and pause work")
 
 - **All agents are stopped.** No containers and no test processes are left running.
-- **#35 is open at e9d053f, not merged,** and its PR comment gives the exact state. Four review passes are done. The last must-fix (the hand-over spin on an unrequested `CancelledError`) is fixed in e9d053f.
-  - Before merging, confirm three things: the r6 probe is ported as a test, the one-off `test_i3_…[postgres-fails]` error is deterministic, and CI is green.
-  - Until it merges, `main` still has #29's race, so Nightly and PRs touching the libraries can time out on docplan.
-- **#19:** the release PR (stackr 0.1.0), which is the maintainer's call.
+- **#35 merged on 2026-09-30** (7f4c2ea, closing #29), after four review passes, with CI green. ADR-0055's invariants I1–I7 hold. It's a breaking change: the storage `Transaction` gained `save_cursor`, and SQL migration 0005 exists. docplan's timeouts are gone from `main`.
+- **#19:** the release PR, which release-please now updates with #35 (an artifactr minor release under bump-minor-pre-major, plus stackr 0.1.0). Releasing is the maintainer's call.
 - **#40:** two small phase 3 leftovers.
 - **Renovate:** the maintainer grants the App's permissions tomorrow; then run `renovate.yml`.
-- **Next, when resumed:** finish #35, then phases 4–7 of RFC-0003 (tracking issue #22).
+- **Next, when resumed:** phases 4–7 of RFC-0003 (tracking issue #22).
 
 ## State, 2026-09-30 (latest)
 
