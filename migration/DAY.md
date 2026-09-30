@@ -10,7 +10,7 @@ You need `gh`, authenticated as `alexnodeland` with the `repo`, `workflow` and `
 
 - **Verify the domain.** In <https://github.com/settings/pages>, add `alexnodeland.com`, then add the TXT record GitHub shows (`_github-pages-challenge-alexnodeland.alexnodeland.com`) at the DNS host, and verify.
 - **Create the release App.** Go to <https://github.com/settings/apps/new>.
-  - Name it `lattice-release`, set any homepage URL, and turn the webhook off.
+  - Name it `alexnodeland-lattice` (its pull requests come from `alexnodeland-lattice[bot]`), set the homepage URL to https://github.com/alexnodeland/lattice, and turn the webhook off.
   - Repository permissions: Contents *Read and write*, Pull requests *Read and write*, and Metadata *Read-only*, which is always on. Nothing else.
   - "Where can this GitHub App be installed?": *Only on this account*.
   - Create it, note its **Client ID**, and generate a **private key** (a `.pem` file).
@@ -159,12 +159,12 @@ gh label create tracking --color 5319E7 --description "Tracks an RFC or a multi-
 
 **Maintainer:**
 
-- Install the `lattice-release` App on `alexnodeland/lattice` only. Also install Renovate (step 0).
+- Install the `alexnodeland-lattice` App on `alexnodeland/lattice` only. Also install Renovate (step 0).
 - Set the App's secrets:
 
   ```sh
   gh secret set RELEASE_APP_CLIENT_ID -R alexnodeland/lattice --body "<the App's Client ID>"
-  gh secret set RELEASE_APP_PRIVATE_KEY -R alexnodeland/lattice < lattice-release.private-key.pem
+  gh secret set RELEASE_APP_PRIVATE_KEY -R alexnodeland/lattice < ~/Downloads/alexnodeland-lattice.*.private-key.pem
   ```
 
 Then turn Actions on, with read-only default permissions (each workflow grants its own):

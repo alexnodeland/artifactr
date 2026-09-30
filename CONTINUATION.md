@@ -146,7 +146,7 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
     - **deptry:** each package declares what it imports on the day, in its own `build:` commit, and deptry joins `check`.
     - **Release token:** a GitHub App, whose token release.yml mints per run. The maintainer creates and installs the App and adds its two secrets.
   - stackr stays frozen: amending the RFC there would move the snapshot, so the amendments land in lattice instead.
-  - **Before any go, the maintainer must:** verify the domain (the Pages TXT record), and create the `lattice-release` App with its Client ID and private key in hand (DAY.md step 0).
+  - **Before any go, the maintainer must:** verify the domain (the Pages TXT record), and create the release App (created 2026-09-30 as `alexnodeland-lattice`) with its Client ID and private key in hand (DAY.md step 0).
 - **Left for the maintainer:** my `git fetch --prune` / `pull` on stackr's local main was denied, so the local stackr checkout is behind origin by the RFC merge. The worktree and branch are already removed.
 
 ## Maintainer decisions, 2026-09-30 (not yet in any repo's RFC or ADR; write them into the RFCs named)
