@@ -1,0 +1,2 @@
+regex:(?<![\w/])(artifactr|reflexr|evalr|stackr|relayr) ?#(\d+)==>alexnodeland/\1#\2
+regex:(?<![\w/])#(\d+)==>alexnodeland/stackr#\1

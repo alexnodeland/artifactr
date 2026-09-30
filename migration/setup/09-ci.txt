@@ -1,0 +1,26 @@
+ci: one set of workflows, hooks and repository files
+
+The packages' workflows, hooks, issue forms and pull request templates were copies of one
+another; lattice has one of each.
+
+- ci.yml: Check runs every affected project's checks, with its dependents, on PostgreSQL 17 with
+  a database per library; Tests runs the tests on Python 3.13 and 3.14; Template and Smoke run
+  stackr's template and smoke tasks, with their matrix values in the environment, when stackr
+  is affected; and on pull requests, Title, Dependency review and OSV. CI, the one required
+  check, passes when every job does.
+- docs.yml builds the site on every pull request, and deploys it from main.
+- nightly.yml runs every project's checks, osv-scanner over uv.lock and a link check, on
+  pushes to main and every night.
+- release.yml: release-please's release pull request, then each released package built alone,
+  attached to its release, with a build-provenance attestation. release-please's configuration
+  lists each package's path, with the lock as an extra file; a breaking change bumps the minor
+  version before 1.0, as it always has here; and its bootstrap is the import.
+- Every action is pinned to a commit, with its version beside it; each workflow grants nothing
+  at the top and each job what it needs, and no checkout keeps its credentials.
+- prek runs the hooks, on one .pre-commit-config.yaml: the hygiene hooks, stackr's JSON, shebang
+  and private-key checks for everything, Conventional Commits, ruff, yamllint and shellcheck for
+  stackr's files, actionlint, zizmor, and pyright through moon.
+- Renovate replaces Dependabot, with its proto manager for .prototools, the lockfile moving
+  within the packages' ranges, a minimum release age on PyPI as on npm, and PostgreSQL held at
+  major 17.
+- The issue forms ask which package; one pull request template; one .editorconfig.

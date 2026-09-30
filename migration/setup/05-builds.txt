@@ -1,0 +1,13 @@
+build: the images build from lattice's root, and one dev container
+
+docplan's and oncall's images install from the workspace's one uv.lock, so their builds start
+from lattice's root: each library's compose.yaml builds its reference implementation with the
+root as the context. Each image has its own Dockerfile.dockerignore, beside its Dockerfile,
+which lets in the workspace's manifests, which `uv sync --locked` checks the lock against, and
+the sources it installs, and nothing else. The images no longer install git, since nothing
+installs from git.
+
+One dev container, at the root, replaces the four. It runs Docker inside it, for stackr's stack,
+the reference implementations and the PostgreSQL tests, and installs proto, which installs moon
+and uv from .prototools, then the workspace. Its egress firewall, its prebuilt image and
+Codespaces come later.

@@ -1,0 +1,20 @@
+build: moon runs every project's tasks
+
+moon runs the tasks, and only those a change affects; uv manages the dependencies. moon's
+Python toolchain stays off (D3): every task is a plain `uv run` command, with the root's
+pyproject.toml and uv.lock as inputs.
+
+- .moon/workspace.yml maps the projects, lattice (the root) included.
+- .moon/tasks/python.yml gives every Python project lint, typecheck, test, format and check.
+  check runs nothing itself and depends on the others, so the list lives in one place.
+- .moon/tasks/distribution.yml gives every package that ships a wheel build, standalone and
+  deptry. standalone installs the wheel with its extras, and its siblings' wheels by path, into
+  an environment outside the workspace, then imports every module and checks the version; it is
+  part of check. deptry isn't yet: it finds imports that artifactr, reflexr and evalr don't
+  declare, which each package declares in a change of its own.
+- Each project's moon.yml states its dependsOn, since moon infers no edge from a range, and a
+  root test holds it to the project's pyproject.toml.
+- The libraries' Makefiles become tasks (schema, dashboards, pg-up, pg-down, app-up, test-pg).
+  The root Makefile keeps install, and check, which runs moon. stackr keeps its Makefile, less
+  install, which the root's replaces.
+- .prototools pins moon and uv, for CI's setup-toolchain and Renovate's proto manager.

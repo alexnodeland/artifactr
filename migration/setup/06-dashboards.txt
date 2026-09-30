@@ -1,0 +1,8 @@
+build: stackr provisions the libraries' dashboards from the checkout
+
+In lattice the libraries' Grafana dashboards sit beside stackr, so stackr's compose.yaml mounts
+each library's deploy/grafana/dashboards into Grafana as a folder of its own, next to stackr's.
+What moved them between repositories retires: the libraries' Release assets workflows and
+artifactr's test of their packaging step, and stackr's scripts/fetch-dashboards, its make
+target and its pins in versions.env. The libraries still generate their dashboards and test them
+against their metric registries.

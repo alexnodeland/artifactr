@@ -1,0 +1,21 @@
+build: one uv workspace for the family's packages
+
+The root pyproject.toml is a virtual project that lists the members, packages/* and
+examples/*, and holds the family's tools and their configuration. One uv.lock replaces the
+five, and every sibling is { workspace = true } in [tool.uv.sources], so evalr is the
+checkout's; the ranges in [project] are what a built wheel carries.
+
+- docplan and oncall move to examples/, since uv refuses a member inside another member. Each is
+  its own project, with its own tests and 100% coverage gate, and the pyright, pytest and
+  coverage settings its library held for it.
+- One ruff configuration, at the root. Every package's code is first-party wherever it is
+  imported, so the imports that name a sibling are sorted again. stackr extends the root's
+  configuration with its own rules for its scripts.
+- One quality test, at the root, over every package, examples/ and the root's own Python.
+- pyright stays per package, on the workspace's one environment.
+- relayr's distribution becomes relayr-ai, since relayr is taken on PyPI; it is still imported
+  as relayr.
+- artifactr's layering test finds docplan in its new place, as reflexr's finds oncall.
+- artifactr's MCP app and its lifespan were covered only by docplan's tests. artifactr tests
+  them itself now, as reflexr does.
+- One .python-version and one .gitignore, at the root.

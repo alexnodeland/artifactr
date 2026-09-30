@@ -1,0 +1,23 @@
+docs: one site for the family, with a section per package
+
+Each package's pages move to docs/<package>/ with git mv, so their history follows them, and
+one mkdocs.yml builds the site, for lattice.alexnodeland.com. Each section keeps its order, its
+old nav, in docs/<package>/.nav.yml. relayr's, which had no site yet, lists its decisions, its
+plan and its brand; its accepted ADRs link to an index of its RFCs and to a brand page that its
+foundation hadn't written, which are added so the strict build holds.
+
+- One build resolves the references between packages, so the evalr inventory goes, and
+  mkdocstrings finds every package in the workspace's environment, without paths.
+- The Sphinx-roles extension, a copy in artifactr and one in reflexr, is one script at the root
+  that covers both, and the list check, a copy in every package, is another.
+- Pages include files by their path from the root: each package's CHANGELOG.md and schemas, and
+  the files stackr's reference pages describe.
+- One CONTRIBUTING.md, code of conduct and security policy, at the root, take in what was each
+  package's: its commands, and its scope notes. Their pages are the family's, and each package
+  keeps its changelog page. Each package keeps its LICENSE, which its wheel ships, and the root
+  has the same one.
+- The site's palette is key, the family's neutral ink, until lattice's brand ADR, and each
+  section's home opens with its package's lockup as before.
+- lattice's README, which also says what grantr and portalr will be.
+- The build's tools are the root's docs group. lattice:docs builds the site strictly, and
+  stackr:reference checks stackr's reference pages in their new place.

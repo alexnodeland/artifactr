@@ -1,0 +1,12 @@
+build(template): render the application template from lattice's root
+
+Copier reads copier.yml at a repository's root, and from packages/stackr it would see a
+directory with no VCS. lattice's root copier.yml includes stackr's questions and sets
+_subdirectory to packages/stackr/template, so `uvx copier copy gh:alexnodeland/lattice my-app`
+works as gh:alexnodeland/stackr did. With only prefixed tags, Copier finds no release and takes
+HEAD, as before.
+
+scripts/check-template and scripts/smoke render from the root. stackr's moon project gains the
+tasks CI's Template and Smoke jobs run: template, which generates one application (the variant
+in TEMPLATE_LIBRARIES, TEMPLATE_EVALS and TEMPLATE_PYTHON) and runs its own checks, and smoke and
+smoke-app.
