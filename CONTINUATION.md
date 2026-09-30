@@ -125,29 +125,35 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 
 ## State, 2026-09-30 (latest)
 
-- **The lattice RFC is Accepted and merged:** stackr RFC-0003, PR #43, at 455a31c. It is the spec for the move; don't re-list its decisions anywhere else.
-- **The old repos are frozen.** Merge nothing in artifactr, reflexr, evalr or stackr, and leave Dependabot's PRs unmerged; Renovate in lattice replaces them.
-- **The relayr agent is retired.** Its `chore/foundation` branch (fd54088) gets imported.
-- **Phase 1 is done: the migration is rehearsed, reviewed, fixed and re-verified. Phase 2 waits for the maintainer's go.**
-  - `migration/lattice.sh WORK_DIR` goes from fresh clones to the finished tree. It pins all five source SHAs and makes 16 first-parent commits. With `LATTICE_DATE` set, two runs give the same HEAD. The final rehearsed tree is `lattice-rehearsal/work/runD/lattice`.
-  - `migration/DAY.md` is the day's runbook, with the maintainer-only steps marked.
-  - `migration/rfc-0003-amendments.md` holds 20 RFC corrections, and becomes the first lattice PR (step 5).
-  - The Bun root (package.json, bun.lock, biome, tsconfig, knip, size-limit, the JS toolchains) waits for the portal RFC.
-  - **Review fixes:**
-    - `scripts/affected.py` replaces `moon ci --downstream deep` on PRs, because moon's version doesn't reach dependents. It fails loudly on a base ref that can't be resolved.
-    - Changelog history sits under `## [Before lattice]`.
-    - Absolute README links, and an `image` task per example.
-    - `title.yml` is a second required check.
-    - A `style:` commit for the re-sort, with `.git-blame-ignore-revs`.
-  - **Verified:** `moon run :check` (45 tasks), 100% coverage, the docs strict build, lychee, osv-scanner with the ignores, deptry, actionlint and zizmor, both images, the dev container, and Copier.
-  - **Not verifiable locally:** release-please end to end, and stackr's full smoke. The day's `uv.lock` is resolved fresh, so step 2 re-runs `:check` and the osv scan.
-  - **Decided by the maintainer, 2026-09-30:**
-    - **litellm:** the lock stays at 1.83.0, as artifactr's already does. pydantic-ai's openai extra needs openai>=3.19, and every later litellm pins openai<3. `osv-scanner.toml` ignores its 13 proxy-server advisories, plus diskcache's unfixed pickle advisory, until 2026-12-31, with reasons.
-    - **deptry:** each package declares what it imports on the day, in its own `build:` commit, and deptry joins `check`.
-    - **Release token:** a GitHub App, whose token release.yml mints per run. The maintainer creates and installs the App and adds its two secrets.
-  - stackr stays frozen: amending the RFC there would move the snapshot, so the amendments land in lattice instead.
-  - **Before any go, the maintainer must:** verify the domain (the Pages TXT record), and create the release App (created 2026-09-30 as `alexnodeland-lattice`) with its Client ID and private key in hand (DAY.md step 0).
-- **Left for the maintainer:** my `git fetch --prune` / `pull` on stackr's local main was denied, so the local stackr checkout is behind origin by the RFC merge. The worktree and branch are already removed.
+- **lattice is live: alexnodeland/lattice, and lattice.alexnodeland.com over HTTPS.** RFC-0003's phases 1 and 2 are done (#20 ticks phase 2). From now on, work opens against lattice, not the old repos.
+- **The old repos are frozen, and the maintainer handles them later (D1).** Merge nothing there. Their 12 open issues moved to lattice#5–#16; the old URLs redirect, and bare `#N` references were rewritten.
+- **What the day did, in lattice PRs:**
+  - #3: Template runs the app with the checkout's uv, and only when stackr changes.
+  - #4: phase 6's timeouts, brought forward: pytest-timeout of 60s with thread dumps, and `timeout-minutes` on every job.
+  - #1: Renovate runs from lattice's own Actions, as the App `alexnodeland-lattice`. The maintainer declined Mend's hosted app, and the secrets are `LATTICE_APP_*`.
+  - #2: RFC-0003's Tracking records what the rehearsal settled. The design sections change only through a superseding RFC, so they weren't amended.
+  - #20: the packages' URLs.
+- **The repo's settings:**
+  - squash-only merges
+  - the `main` ruleset, requiring CI and Title on up-to-date branches
+  - secret scanning with push protection, and private vulnerability reporting
+  - the dependency graph and vulnerability alerts on, with Dependabot's security updates off
+  - Pages from Actions, with HTTPS enforced
+  - the 15 known alerts dismissed, with the reasons `osv-scanner.toml` gives
+- **Open in lattice:**
+  - **#19, release-please's first release PR.** It would release all five packages, with only the move's `docs:` commits as notes, because release-please's default changelog sections count `docs` as releasable. It needs the maintainer's release-policy decision; don't merge it without one.
+  - **#17:** lift the osv ignores by 2026-12-31.
+  - **#18:** the `$…_TEST_POSTGRES_URL` moon inputs make every PR run artifactr's and reflexr's tests, plus their dependents'.
+  - **docplan's tests** hung in CI 3 times in 5 runs, and never locally (macOS, Linux, starved CPU, small thread pool). With #4, a hang now fails in 60s with every thread's stack; open an issue from the first stack.
+  - **Phase 3:** about 100 docs links, install lines included, still name the old repos. That's the phase 3 exit criterion. Phases 3–7 follow as lattice PRs linked to issues.
+- **Migration artifacts** are under `migration/` on this branch:
+  - `DAY.md`, with an "As run" section
+  - `rfc-0003-amendments.md`, the source for phase 3's ADRs
+  - `lattice.sh` and its steps
+- **Local checkouts:**
+  - The day's tree is `~/anodeland/projects/code/lattice-day/lattice`, whose origin is lattice over SSH. Pull before use; it predates #1–#4.
+  - The scratch clone used for today's PRs is in the session scratchpad.
+  - The maintainer's `gh` token lacks the `workflow` scope, so update PR branches that touch workflows over SSH, not with `gh pr update-branch`.
 
 ## Maintainer decisions, 2026-09-30 (not yet in any repo's RFC or ADR; write them into the RFCs named)
 

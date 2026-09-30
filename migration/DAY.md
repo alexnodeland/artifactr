@@ -1,6 +1,24 @@
 # The day: moving into lattice
 
-The runbook for stackr's RFC-0003, Migration, "The day", steps 0 to 7, as commands. Nothing here has been run. Run each block by hand, in order, and move on only when its "Done when" holds. Steps marked **Maintainer** need the account owner, in GitHub's settings or at the DNS host.
+The runbook for stackr's RFC-0003, Migration, "The day", steps 0 to 7, as commands. Run each block by hand, in order, and move on only when its "Done when" holds. Steps marked **Maintainer** need the account owner, in GitHub's settings or at the DNS host.
+
+## As run, 2026-09-30
+
+The day ran from this runbook, with these differences:
+
+- **Step 2.** proto's shims went last on PATH, since only moon comes from proto here. proto's `uvx` shim runs `uv` without `tool run`, so `uvx ruff@…` failed with the shims first. Only `cryptography` resolved differently from the rehearsal (50.0.1 → 50.0.2). The osv scan and all 45 checks passed.
+- **Step 0 and step 3, Renovate.** Mend's hosted app requires a Mend account, and the maintainer chose no infrastructure outside GitHub. So Renovate's open-source CLI runs from `renovate.yml`, acting as the same App as release-please. That App, `alexnodeland-lattice`, also has Renovate's permissions:
+  - Administration: read
+  - Checks: write
+  - Commit statuses: write
+  - Issues: write
+  - Workflows: write
+  - Dependabot alerts: read
+
+  Each workflow narrows its token. The secrets are `LATTICE_APP_CLIENT_ID` and `LATTICE_APP_PRIVATE_KEY`. (lattice#1)
+- **Step 3, the dependency graph.** A new repository doesn't have it, and dependency review needs it. `gh api -X PUT repos/alexnodeland/lattice/vulnerability-alerts` turns it on with the alerts, and Dependabot's security updates stay off. The 15 alerts it raised are the advisories `osv-scanner.toml` records, and each was dismissed with the same reason.
+- **Step 3, the refused push.** The test push to `main` wasn't run; the agent's permissions don't allow it. `gh api repos/alexnodeland/lattice/rules/branches/main` lists the rules in force, and the first pull requests went through them.
+- **Step 5.** CI's Template jobs failed on proto's `uv` shim outside lattice, which the rehearsal's Homebrew `uv` had hidden. They also ran on every pull request. lattice#3 fixed both, before #1 (Renovate) and #2 (RFC-0003's tracking: phase 1 and what the rehearsal settled). The design sections of an Accepted RFC change only through a superseding RFC, so the corrections went into its Tracking section instead of the amendments this runbook planned.
 
 You need `gh`, authenticated as `alexnodeland` with the `repo` scope (git pushes over SSH, so the workflow files need no `workflow` scope), plus git, git-filter-repo, uv, moon (`proto use` in a checkout), jq and Docker. The commands assume `REHEARSAL=~/anodeland/projects/code/lattice-rehearsal`.
 

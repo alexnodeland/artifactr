@@ -1,6 +1,8 @@
-# RFC-0003 amendments from the rehearsal
+# RFC-0003: what the rehearsal settled, in full
 
-stackr's RFC-0003, "One repository: lattice", is Accepted. Its phase 1 rehearsal found text that is wrong, or that the rehearsal had to settle. Each amendment below quotes the RFC as it stands and gives its replacement, with the evidence. They are the first pull request in lattice after the day, against `docs/stackr/rfcs/0003-one-repository-lattice.md`.
+stackr's RFC-0003, "One repository: lattice", is Accepted. Its phase 1 rehearsal found text that is wrong, or that the rehearsal had to settle. Each entry below quotes the RFC as it stands and gives what lattice does instead, with the evidence.
+
+The RFC process changes an Accepted RFC's design sections only through a superseding RFC, so these were never applied to it. lattice#2 lists them in RFC-0003's Tracking section, one line each. This file is the source for phase 3's ADRs, which record each decision in full.
 
 ## 1. The first message rule rewrites a reference twice
 
