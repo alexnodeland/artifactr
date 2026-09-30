@@ -2,7 +2,7 @@
 
 The runbook for stackr's RFC-0003, Migration, "The day", steps 0 to 7, as commands. Nothing here has been run. Run each block by hand, in order, and move on only when its "Done when" holds. Steps marked **Maintainer** need the account owner, in GitHub's settings or at the DNS host.
 
-You need `gh`, authenticated as `alexnodeland` with the `repo`, `workflow` and `admin:repo_hook` scopes, plus git, git-filter-repo, uv, moon (`proto use` in a checkout), jq and Docker. The commands assume `REHEARSAL=~/anodeland/projects/code/lattice-rehearsal`.
+You need `gh`, authenticated as `alexnodeland` with the `repo` scope (git pushes over SSH, so the workflow files need no `workflow` scope), plus git, git-filter-repo, uv, moon (`proto use` in a checkout), jq and Docker. The commands assume `REHEARSAL=~/anodeland/projects/code/lattice-rehearsal`.
 
 ## 0. Domain, and the two Apps
 
@@ -80,7 +80,7 @@ gh repo create alexnodeland/lattice --public \
   --description "The family's packages: artifactr, reflexr, evalr, relayr and stackr." \
   --homepage https://lattice.alexnodeland.com --disable-wiki
 gh api -X PUT repos/alexnodeland/lattice/actions/permissions -F enabled=false
-git remote add origin https://github.com/alexnodeland/lattice.git
+git remote add origin git@github.com:alexnodeland/lattice.git
 git push origin main
 git push origin artifactr-v0.1.0
 ```
