@@ -123,6 +123,17 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   - Stop background tasks with `task.cancel(); await asyncio.gather(*tasks, return_exceptions=True)`. `asyncio.wait` belongs only inside `_to_the_end`.
   - Squash merges use commit messages, so keep each PR to one commit whose message matches its title.
 
+## Paused, 2026-09-30 (the maintainer: "cut it off and pause work")
+
+- **All agents are stopped.** No containers and no test processes are left running.
+- **#35 is open at e9d053f, not merged,** and its PR comment gives the exact state. Four review passes are done. The last must-fix (the hand-over spin on an unrequested `CancelledError`) is fixed in e9d053f.
+  - Before merging, confirm three things: the r6 probe is ported as a test, the one-off `test_i3_…[postgres-fails]` error is deterministic, and CI is green.
+  - Until it merges, `main` still has #29's race, so Nightly and PRs touching the libraries can time out on docplan.
+- **#19:** the release PR (stackr 0.1.0), which is the maintainer's call.
+- **#40:** two small phase 3 leftovers.
+- **Renovate:** the maintainer grants the App's permissions tomorrow; then run `renovate.yml`.
+- **Next, when resumed:** finish #35, then phases 4–7 of RFC-0003 (tracking issue #22).
+
 ## State, 2026-09-30 (latest)
 
 - **lattice is live: alexnodeland/lattice, and lattice.alexnodeland.com over HTTPS.** RFC-0003's phases 1 and 2 are done (#20 ticks phase 2). From now on, work opens against lattice, not the old repos.
