@@ -374,3 +374,22 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **Operators:** a deployment-wide `operator` role in grantr, an audited grant; operators see every tenant and the deep links; tenant admins see their tenant's summaries, read through the tools' APIs by tenant tag. Added to grantr's RFC.
 - **P6, observability isolation (maintainer, against my recommendation of separate stores):** shared stores, every read filtered in one module of portalr (`portalr.readers`, a `Tenant` only grantr makes), PromQL through prom-label-proxy, `tenant.id` on every span, log and metric; rendered in the admin UI with vendored AgentPrism (MIT, alpha), Tremor/Recharts, uPlot and our own log list. Separate stores stay the documented stronger alternative.
 - **portalr's RFC:** `docs/rfcs/0002`, drafted on the grantr RFC's branch's base; going to review, then its own PR.
+
+## Implementation loop to v0.1 (maintainer, 2026-10-12: "refine the RFCs, merge when clean, then an implementation loop to v0.1")
+- **Mechanics:** ≤4 editing agents, each in its own `git worktree add` under `~/anodeland/projects/code/lattice-day/lattice` (NOT Agent's `isolation: worktree`, which worktrees artifactr). Simplicity review (Plan agent) per PR, update-branch, green CI, squash. Coordinator reviews and merges, doesn't edit alongside.
+- **Each new package's first PR is a foundation:** skeleton, `docs/<pkg>/` with its RFC-0001 plan derived from the lattice RFC, ADRs recording the lattice RFC's decisions, moon.yml, manifest 0.0.0, nav, tracking issue.
+- **Order:** RFC-0003 phase 4 (template in lattice) gates grantr phase 1 (library + template changes together). grantr phase 1 gates relayr phase 1 and RFC-0003 phase 5.
+- **Surface later:** #19 when grantr phase 1 lands (another breaking change), and before portalr phase 7 (needs a released portalr wheel). portalr's marks need a design round with the maintainer.
+
+| Wave | Work | Package | Branch | PR | Status |
+|---|---|---|---|---|---|
+| R | lattice RFC-0001 grantr | docs | docs/rfc-grantr | #43 | final review |
+| R | lattice RFC-0002 portalr | docs | docs/rfc-portalr (stacked) | – | final review |
+| 0 | RFC-0003 phase 4: the template in lattice | stackr | | | |
+| 0 | grantr foundation + phase 2 (core, memory adapter) | grantr | | | |
+| 0 | portalr foundation + phase 1 (Bun workspace) | portalr | | | |
+| 0 | #40 + reflexr RFC-0003 phase 5 | docs, reflexr | | | |
+| 1 | grantr phase 1 in artifactr, then reflexr | artifactr, reflexr, stackr | | | |
+| 1 | grantr phase 3 (SQL, router, OpenAPI) | grantr | | | |
+| 1 | portalr phase 2 (brand; maintainer round) | docs, portalr | | | |
+| 2+ | relayr 1; RFC-0003 5; grantr 4–5; portalr 3–4; relayr 2–4; portalr 5–6; grantr 6; RFC-0003 6–7; relayr 5–7; portalr 7–8; releases | | | | |
