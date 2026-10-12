@@ -354,3 +354,13 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   4. portalr's implementation; relayr phases 5–6; #6, #9.
   5. RFC-0003 phase 7; relayr phase 7 and the product repository; v0.1 releases.
 - **After v0.1:** the Supabase issues #11–#14. #15 (Auth flows in the template) folds into grantr's RFC.
+
+### Maintainer decisions, 2026-10-12: RFCs first; grantr's design
+- **Order:** grantr's RFC, then portalr's, before any code. Wave 1 waits.
+- **Givens:** grantr depends on no lattice package and none on it (actions cross as strings; the template wires); own RBAC with an OpenFGA-shaped port (check, list), an OpenFGA adapter possible later; a family RFC at `docs/rfcs/0001`, grantr's RFC-0001 derived from it.
+- **Hook:** widen `Authorize` to `(tenant, workspace, actor, access)`, asked per command and per read; folds in `StoredRules.allow`; side effects (mirrors, relayr followers) move to an explicit `on_open`. Breaking in both libraries; amends artifactr ADR-0012, ADR-0048, reflexr ADR-0016.
+- **Granularity:** down to threads and artifacts in v0.1 (maintainer chose this over my workspace-only recommendation). Needs a `visible` list call beside the check; phase it after workspace roles.
+- **Default visibility:** workspace-visible unless made private to named users or groups.
+- **Agent runs:** act for the user whose message started the turn, capped by the agent's write policy; the Runner records who it acts for.
+- **Tenancy:** grantr owns tenants and memberships; Supabase only authenticates; the active tenant is named per request and checked. Changes the template's Principal and stackr ADR-0002.
+- **v0.1 scope:** groups, service principals, the permission-matrix test, an append-only audit log in grantr, custom roles, PostgreSQL row-level security.
