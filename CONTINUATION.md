@@ -383,12 +383,12 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 
 | Wave | Work | Package | PR | Status |
 |---|---|---|---|---|
-| done | RFCs; #40; reflexr RFC-0003 p5; template in lattice (RFC-0003 p4); grantr p0–p3, p4a (runtime roles); portalr p0–p2 (brand, ADR-0014); hook (lattice RFC-0001 p1); RFC-0003 p5 (acceptance) and p6 (randomly, CodeQL/Scorecard, breaks check; ty decided against); relayr p1; #53 | | #43–#45, #48–#52, #54–#57, #59–#65, #68, #70 | merged |
-| 3 | grantr p4b: the template (+ a reflexr PR split out: ExternalAgentActor.on_behalf_of, rules/schedules 403, WS close codes) | stackr, reflexr | #69 | review fixes |
-| 3 | #8 reserved publishers; #5 list workspaces | reflexr, artifactr | #72, #71 | queue: #72 then #71 |
-| 3 | relayr p2: outbound + loop control | relayr | – | agent running |
-| 3 | portalr p3: client | portalr | – | agent starting |
-| next | grantr p5 (threads/artifacts), p6 (RLS), p7 docs; portalr p4–p8; relayr p3–p7; RFC-0003 p7; #66, #67, #73; releases (#19, ask maintainer) | | | |
+| done | RFCs; RFC-0003 p4–p6; lattice RFC-0001 p1 (hook); grantr p0–p4; portalr p0–p3; relayr p1–p2; #5, #8, #10, #40, #53; follow-ups #74–#76, #85 | | #43–#85 | merged (latest 6167895) |
+| 4 | grantr: portalr actions in roles; then p5 (threads/artifacts), p6 (RLS) | grantr, artifactr, reflexr, relayr, stackr | – | agent |
+| 4 | library follow-ups #67, #66, #80, #81 | artifactr, reflexr | – | agent |
+| 4 | relayr p4 (telemetry), then p3 (template bridge option, example, smoke) | relayr, stackr | – | agent |
+| 4 | portalr p4 (router: 4a, 4b, 4c) | portalr, stackr, libs | – | agent |
+| next | grantr p7 docs; portalr p5–p8 (p7 needs a released portalr: ask #19); relayr p5–p7 (p7 = product repo); RFC-0003 p7; #73, #78, #82, #83; releases | | | |
 
 - **Agent rules:** scratchpad `loop-rules.md` (session scratchpad). Worktrees at `~/anodeland/projects/code/lattice-day/wt-<slug>`. No session links in commits or PRs from now on (#41–#43 have them; noted to the maintainer).
 - Follow-up filed: #53 (layering tests' docstrings).
