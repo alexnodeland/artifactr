@@ -372,3 +372,5 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **Chat:** our own thin chat in `ui`, a store in `client` speaking artifactr's protocol.
 - **Observability:** native summaries (feedback, evals, access, usage and spend), deep links out for traces and dashboards.
 - **Operators:** a deployment-wide `operator` role in grantr, an audited grant; operators see every tenant and the deep links; tenant admins see their tenant's summaries, read through the tools' APIs by tenant tag. Added to grantr's RFC.
+- **P6, observability isolation (maintainer, against my recommendation of separate stores):** shared stores, every read filtered in one module of portalr (`portalr.readers`, a `Tenant` only grantr makes), PromQL through prom-label-proxy, `tenant.id` on every span, log and metric; rendered in the admin UI with vendored AgentPrism (MIT, alpha), Tremor/Recharts, uPlot and our own log list. Separate stores stay the documented stronger alternative.
+- **portalr's RFC:** `docs/rfcs/0002`, drafted on the grantr RFC's branch's base; going to review, then its own PR.
