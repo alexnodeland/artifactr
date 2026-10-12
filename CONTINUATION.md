@@ -381,19 +381,20 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **Order:** RFC-0003 phase 4 (template in lattice) gates grantr phase 1 (library + template changes together). grantr phase 1 gates relayr phase 1 and RFC-0003 phase 5.
 - **Surface later:** #19 when grantr phase 1 lands (another breaking change), and before portalr phase 7 (needs a released portalr wheel). portalr's marks need a design round with the maintainer.
 
-| Wave | Work | Package | Branch | PR | Status |
-|---|---|---|---|---|---|
-| R | lattice RFC-0001 grantr | docs | docs/rfc-grantr | #43 | merged 80e7f96 |
-| R | lattice RFC-0002 portalr | docs | docs/rfc-portalr | #44 | merged 06b9254 |
-| 0 | RFC-0003 phase 4: the template in lattice | stackr | feat/template-in-lattice | #51 | agent running |
-| 0 | grantr foundation + phase 2 (core, memory adapter) | grantr | chore/grantr-foundation, feat/grantr-core | #49 | agent running |
-| 0 | portalr foundation + phase 1 (Bun workspace) | portalr | chore/portalr-foundation, feat/portalr-workspace | #50, #52 | agent running |
-| 0 | #40 + reflexr RFC-0003 phase 5 | docs, reflexr | | #45, #48 | merged 256fd9c, 321c9e9 |
-| 0 | RFC-0003 phase 6 (randomly, CodeQL, Scorecard, griffe, ty) | root | | | agent running |
-| 1 | grantr phase 1 in artifactr, then reflexr | artifactr, reflexr, stackr | | | |
-| 1 | grantr phase 3 (SQL, router, OpenAPI) | grantr | | | |
-| 1 | portalr phase 2 (brand; maintainer round) | docs, portalr | | | |
-| 2+ | relayr 1; RFC-0003 5; grantr 4–5; portalr 3–4; relayr 2–4; portalr 5–6; grantr 6; RFC-0003 6–7; relayr 5–7; portalr 7–8; releases | | | | |
+| Wave | Work | Package | PR | Status |
+|---|---|---|---|---|
+| R | lattice RFC-0001 grantr; RFC-0002 portalr | docs | #43, #44 | merged |
+| 0 | #40; reflexr RFC-0003 phase 5 | docs, reflexr | #45, #48 | merged |
+| 0 | RFC-0003 phase 4: template in lattice | stackr | #51 | merged |
+| 0 | grantr foundation; phase 2 core | grantr | #49, #54 | merged |
+| 0 | portalr foundation; phase 1 Bun workspace | portalr | #50, #52 | merged |
+| 0 | RFC-0003 phase 6: randomly, CodeQL+Scorecard, griffe | root | #55, #56, #57 | review fixes, merge in that order |
+| 0 | ty trial | root | #58 | maintainer: keep pyright; close #58, real fixes + ADR in a new PR |
+| 1 | grantr phase 1: the hook (artifactr, then reflexr) | artifactr, reflexr, stackr | – | agent running |
+| 1 | grantr phase 3: SQL, router, OpenAPI | grantr | #60 | in review |
+| 1 | portalr phase 2: brand candidates (maintainer round) | portalr | – | agent drafting, uncommitted |
+| next | RFC-0003 phase 5 (OpenAPI, Bruno, Acceptance) after the hook; relayr phase 1 after the hook; grantr 4–5; portalr 3–4 | | | |
 
 - **Agent rules:** scratchpad `loop-rules.md` (session scratchpad). Worktrees at `~/anodeland/projects/code/lattice-day/wt-<slug>`. No session links in commits or PRs from now on (#41–#43 have them; noted to the maintainer).
 - Follow-up filed: #53 (layering tests' docstrings).
+- **Maintainer, 2026-10-12:** keep pyright strict; ty revisited when it has a strict mode (#58 trial: 1 of 202).
