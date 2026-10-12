@@ -340,3 +340,17 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
   REST has no list-runs endpoint. Leave event reads to the log-reads work.
 - **`Sent.run` can legitimately be `None`:** on `ThreadBusy`, when the message steers a running run, or when an answer leaves requests unanswered. So #51's fix is to document when it is `None`, not to make the field required.
 - **reflexr's `litellm_model`** (`src/reflexr/litellm/gateway.py:75`) has the same signature as artifactr's and also lacks `settings=`. Change both together.
+
+## Resumed, 2026-10-12: the plan to finish the initial implementations
+- **Unblocked:** lattice #41 (pydantic-ai-slim 2.55; litellm GHSA-3cv6-jpf6-8222 ignored, Dependabot #16 dismissed, #17's counts updated). #42 paces lychee (GitHub 503s on 2 of 8 nights).
+- **Still on the maintainer:** Renovate (App permissions, failing daily since 10-06), #19 (release), #7 (PyPI).
+- **Done means:** every package at v0.1 with its RFC's tracking ticked (relayr, grantr, portalr included); the template generates an application using all of them; RFC-0003 phases 4–7 done, the Acceptance job green against a started stack; the product repository (RFC-0002 phase 7) passes its CI.
+- **RFC-0002 prerequisites:** artifactr #60, #61, #63, #50 and reflexr #45, #62 are done. Left: lattice #5 (workspaces; relayr phase 3), #8 (reserved publishers; relayr phase 5), #10's phase 5 (reflexr RFC-0003 docs, ADRs, oncall; relayr phase 5). relayr's CONTRIBUTING tracking still says phase 2 waits on #63: stale.
+- **grantr and portalr have no RFC.** grantr's comes first: portalr's admin UI manages access, and artifactr's and reflexr's authorize hooks are grantr's adapters. portalr's RFC brings the Bun workspace (`package.json`, `bun.lock`, `.moon/toolchains.yml`, Biome, tsconfig, knip, size-limit), its Bruno collection and `bdd` task, and the brand ADR drawing both reserved marks (lattice ADR-0001).
+- **Waves** (≤4 editing agents each, simplicity review per PR):
+  1. relayr phase 1; RFC-0003 phase 4; reflexr RFC-0003 phase 5; #40. The grantr RFC drafted alongside.
+  2. relayr phase 2; #5; #8; RFC-0003 phase 5 (artifactr's and reflexr's REST). The portalr RFC, once grantr's is accepted.
+  3. grantr's implementation; relayr phases 3–4; RFC-0003 phase 6 (timeouts already done in #4).
+  4. portalr's implementation; relayr phases 5–6; #6, #9.
+  5. RFC-0003 phase 7; relayr phase 7 and the product repository; v0.1 releases.
+- **After v0.1:** the Supabase issues #11–#14. #15 (Auth flows in the template) folds into grantr's RFC.
