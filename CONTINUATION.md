@@ -383,13 +383,12 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 
 | Wave | Work | Package | PR | Status |
 |---|---|---|---|---|
-| R/0 | RFCs; #40; reflexr RFC-0003 p5; template in lattice; grantr p0, p2, p3; portalr p0, p1; #53 | | #43–#45, #48–#52, #54, #55, #60, #63 | merged |
-| 1 | grantr p1: the hook (artifactr, reflexr) | | #59, #61 | merged b41c8ba, 7f55767 |
-| 1 | RFC-0003 p6: CodeQL+Scorecard, griffe; ty fixes + "pyright stays" ADR-0013 | root | #56, #57, #62 | merge queue: #62 → #64 → #56 → #57 |
-| 1 | portalr p2: brand (Ajar, Shield; ADR-0014) + ui tokens/primitives | portalr | #64 | approved, after #62 |
-| 2 | grantr p4: the template (roles application/rule, matrix, access question, tenancy) | grantr, stackr | – | agent running |
-| 2 | RFC-0003 p5: OpenAPI docs, Bruno, Acceptance, Schemathesis | artifactr, reflexr | – | agent running (hook agent) |
-| next | portalr p3 client (needs RFC-0003 p5); relayr p1; #5; #8; grantr p5–p7; portalr p4–p8; RFC-0003 p7; relayr p2–p7; releases | | | |
+| done | RFCs; #40; reflexr RFC-0003 p5; template in lattice (RFC-0003 p4); grantr p0–p3, p4a (runtime roles); portalr p0–p2 (brand, ADR-0014); hook (lattice RFC-0001 p1); RFC-0003 p5 (acceptance) and p6 (randomly, CodeQL/Scorecard, breaks check; ty decided against); relayr p1; #53 | | #43–#45, #48–#52, #54–#57, #59–#65, #68, #70 | merged |
+| 3 | grantr p4b: the template (+ a reflexr PR split out: ExternalAgentActor.on_behalf_of, rules/schedules 403, WS close codes) | stackr, reflexr | #69 | review fixes |
+| 3 | #8 reserved publishers; #5 list workspaces | reflexr, artifactr | #72, #71 | queue: #72 then #71 |
+| 3 | relayr p2: outbound + loop control | relayr | – | agent running |
+| 3 | portalr p3: client | portalr | – | agent starting |
+| next | grantr p5 (threads/artifacts), p6 (RLS), p7 docs; portalr p4–p8; relayr p3–p7; RFC-0003 p7; #66, #67, #73; releases (#19, ask maintainer) | | | |
 
 - **Agent rules:** scratchpad `loop-rules.md` (session scratchpad). Worktrees at `~/anodeland/projects/code/lattice-day/wt-<slug>`. No session links in commits or PRs from now on (#41–#43 have them; noted to the maintainer).
 - Follow-up filed: #53 (layering tests' docstrings).
