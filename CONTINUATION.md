@@ -393,3 +393,6 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **Agent rules:** scratchpad `loop-rules.md` (session scratchpad). Worktrees at `~/anodeland/projects/code/lattice-day/wt-<slug>`. No session links in commits or PRs from now on (#41–#43 have them; noted to the maintainer).
 - Follow-up filed: #53 (layering tests' docstrings).
 - **Maintainer, 2026-10-12:** keep pyright strict; ty revisited when it has a strict mode (#58 trial: 1 of 202).
+
+### Maintainer decisions, 2026-10-12: hosting
+- stackr RFC-0004, hosting recipes, **part of v0.1**: (1) single host — the Compose stack on one VM, production-shaped; (2) AWS with OpenTofu. Floci (MIT local AWS emulator) tests the AWS recipe locally and in CI; AWS itself stays out of CI. Amends stackr ADR-0001's "later". Research agent running; then I draft the RFC with a question round.
