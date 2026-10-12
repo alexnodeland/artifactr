@@ -383,17 +383,13 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 
 | Wave | Work | Package | PR | Status |
 |---|---|---|---|---|
-| R | lattice RFC-0001 grantr; RFC-0002 portalr | docs | #43, #44 | merged |
-| 0 | #40; reflexr RFC-0003 phase 5 | docs, reflexr | #45, #48 | merged |
-| 0 | RFC-0003 phase 4: template in lattice | stackr | #51 | merged |
-| 0 | grantr foundation; phase 2 core | grantr | #49, #54 | merged |
-| 0 | portalr foundation; phase 1 Bun workspace | portalr | #50, #52 | merged |
-| 0 | RFC-0003 phase 6: randomly, CodeQL+Scorecard, griffe | root | #55, #56, #57 | review fixes, merge in that order |
-| 0 | ty trial | root | #58 | maintainer: keep pyright; close #58, real fixes + ADR in a new PR |
-| 1 | grantr phase 1: the hook (artifactr, then reflexr) | artifactr, reflexr, stackr | – | agent running |
-| 1 | grantr phase 3: SQL, router, OpenAPI | grantr | #60 | in review |
-| 1 | portalr phase 2: brand candidates (maintainer round) | portalr | – | agent drafting, uncommitted |
-| next | RFC-0003 phase 5 (OpenAPI, Bruno, Acceptance) after the hook; relayr phase 1 after the hook; grantr 4–5; portalr 3–4 | | | |
+| R/0 | RFCs; #40; reflexr RFC-0003 p5; template in lattice; grantr p0, p2, p3; portalr p0, p1; #53 | | #43–#45, #48–#52, #54, #55, #60, #63 | merged |
+| 1 | grantr p1: the hook (artifactr, reflexr) | | #59, #61 | merged b41c8ba, 7f55767 |
+| 1 | RFC-0003 p6: CodeQL+Scorecard, griffe; ty fixes + "pyright stays" ADR-0013 | root | #56, #57, #62 | merge queue: #62 → #64 → #56 → #57 |
+| 1 | portalr p2: brand (Ajar, Shield; ADR-0014) + ui tokens/primitives | portalr | #64 | approved, after #62 |
+| 2 | grantr p4: the template (roles application/rule, matrix, access question, tenancy) | grantr, stackr | – | agent running |
+| 2 | RFC-0003 p5: OpenAPI docs, Bruno, Acceptance, Schemathesis | artifactr, reflexr | – | agent running (hook agent) |
+| next | portalr p3 client (needs RFC-0003 p5); relayr p1; #5; #8; grantr p5–p7; portalr p4–p8; RFC-0003 p7; relayr p2–p7; releases | | | |
 
 - **Agent rules:** scratchpad `loop-rules.md` (session scratchpad). Worktrees at `~/anodeland/projects/code/lattice-day/wt-<slug>`. No session links in commits or PRs from now on (#41–#43 have them; noted to the maintainer).
 - Follow-up filed: #53 (layering tests' docstrings).
