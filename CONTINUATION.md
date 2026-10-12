@@ -385,13 +385,15 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 |---|---|---|---|---|---|
 | R | lattice RFC-0001 grantr | docs | docs/rfc-grantr | #43 | merged 80e7f96 |
 | R | lattice RFC-0002 portalr | docs | docs/rfc-portalr | #44 | merged 06b9254 |
-| 0 | RFC-0003 phase 4: the template in lattice | stackr | feat/template-in-lattice | | agent running |
-| 0 | grantr foundation + phase 2 (core, memory adapter) | grantr | chore/grantr-foundation, feat/grantr-core | | agent running |
-| 0 | portalr foundation + phase 1 (Bun workspace) | portalr | chore/portalr-foundation, feat/portalr-workspace | | agent running |
-| 0 | #40 + reflexr RFC-0003 phase 5 | docs, reflexr | docs/phase-3-leftovers, docs/reflexr-runtime-rules | | agent running |
+| 0 | RFC-0003 phase 4: the template in lattice | stackr | feat/template-in-lattice | #51 | agent running |
+| 0 | grantr foundation + phase 2 (core, memory adapter) | grantr | chore/grantr-foundation, feat/grantr-core | #49 | agent running |
+| 0 | portalr foundation + phase 1 (Bun workspace) | portalr | chore/portalr-foundation, feat/portalr-workspace | #50, #52 | agent running |
+| 0 | #40 + reflexr RFC-0003 phase 5 | docs, reflexr | | #45, #48 | merged 256fd9c, 321c9e9 |
+| 0 | RFC-0003 phase 6 (randomly, CodeQL, Scorecard, griffe, ty) | root | | | agent running |
 | 1 | grantr phase 1 in artifactr, then reflexr | artifactr, reflexr, stackr | | | |
 | 1 | grantr phase 3 (SQL, router, OpenAPI) | grantr | | | |
 | 1 | portalr phase 2 (brand; maintainer round) | docs, portalr | | | |
 | 2+ | relayr 1; RFC-0003 5; grantr 4–5; portalr 3–4; relayr 2–4; portalr 5–6; grantr 6; RFC-0003 6–7; relayr 5–7; portalr 7–8; releases | | | | |
 
 - **Agent rules:** scratchpad `loop-rules.md` (session scratchpad). Worktrees at `~/anodeland/projects/code/lattice-day/wt-<slug>`. No session links in commits or PRs from now on (#41–#43 have them; noted to the maintainer).
+- Follow-up filed: #53 (layering tests' docstrings).
