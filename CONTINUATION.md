@@ -364,3 +364,11 @@ This covers the loop across artifactr, reflexr, evalr and stackr: "continue unti
 - **Agent runs:** act for the user whose message started the turn, capped by the agent's write policy; the Runner records who it acts for.
 - **Tenancy:** grantr owns tenants and memberships; Supabase only authenticates; the active tenant is named per request and checked. Changes the template's Principal and stackr ADR-0002.
 - **v0.1 scope:** groups, service principals, the permission-matrix test, an append-only audit log in grantr, custom roles, PostgreSQL row-level security.
+- **grantr's RFC:** lattice #43 (`docs/rfcs/0001`), Discussion; merging accepts it. Reviewed for simplicity; fixes applied (hooks on `Workspaces`, `on_open` idempotent per open, one author per turn, restricted flag, second engine for cross-tenant work under RLS).
+
+### Maintainer decisions, 2026-10-12: portalr's design
+- **Console:** a router the application mounts, serving the two built UIs; the browser calls the libraries' and grantr's routes on one origin; portalr's routes add only Langfuse, Tempo, LiteLLM reads and Supabase invites.
+- **Stack:** React 19, TanStack Router, Query and Table, Vite 8, Base UI, Tailwind 4 themed by the brand tokens, openapi-typescript and openapi-fetch; two static SPAs.
+- **Chat:** our own thin chat in `ui`, a store in `client` speaking artifactr's protocol.
+- **Observability:** native summaries (feedback, evals, access, usage and spend), deep links out for traces and dashboards.
+- **Operators:** a deployment-wide `operator` role in grantr, an audited grant; operators see every tenant and the deep links; tenant admins see their tenant's summaries, read through the tools' APIs by tenant tag. Added to grantr's RFC.
