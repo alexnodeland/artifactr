@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **artifactr has moved to [lattice](https://github.com/alexnodeland/lattice/tree/main/packages/artifactr).** It is developed there now, alongside reflexr, evalr, relayr, grantr, portalr and stackr, and released to PyPI as [`artifactr-ai`](https://pypi.org/project/artifactr-ai/). Docs are at [lattice.alexnodeland.com/artifactr](https://lattice.alexnodeland.com/artifactr/). Its 0.1.0 was released from here; lattice keeps that tag as `artifactr-v0.1.0`. This repository is archived and kept for its history.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/banner-dark.svg">
   <img alt="artifactr: people and agents editing the same artifacts, every change versioned and attributed." src="docs/assets/brand/banner-light.svg" width="100%">
